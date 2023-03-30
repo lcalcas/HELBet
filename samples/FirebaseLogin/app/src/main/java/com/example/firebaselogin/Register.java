@@ -19,13 +19,18 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Register extends AppCompatActivity {
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
+    DatabaseReference mRef = mDatabase.getReference();
+    TextView loginNow;
     TextInputEditText editEmail, editPassword;
     Button btnRegister;
-    FirebaseAuth mAuth;
     ProgressBar progressBar;
-    TextView loginNow;
 
     @Override
     protected void onStart() {
@@ -43,8 +48,6 @@ public class Register extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
-        mAuth = FirebaseAuth.getInstance();
 
         editEmail = findViewById(R.id.registerEmail);
         editPassword = findViewById(R.id.registerPassword);
@@ -79,6 +82,9 @@ public class Register extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 progressBar.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
+                                    String userId = task.getResult().getUser().getUid();
+                                    User user = new User(email);
+                                    RealtimeDatabaseManager.insertUser(userId, user);
                                     Toast.makeText(Register.this, "Account created.",
                                             Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
