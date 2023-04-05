@@ -5,27 +5,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
-    private DatabaseReference mRef;
-    private APIManager mApi;
+public class LeaguesActivity extends AppCompatActivity {
     private List<League> leaguesList;
     private LeagueAdapter leagueAdapter;
     private RecyclerView leaguesListing;
@@ -35,8 +28,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mRef = FirebaseDatabase.getInstance().getReference("leagues");
-        leaguesList = new ArrayList<>();
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(getApplicationContext(), Login.class);
+        startActivity(intent);
+        finish();
+    }
+}
+
+/*
+leaguesList = new ArrayList<>();
         leagueAdapter = new LeagueAdapter(this, leaguesList);
 
         leaguesListing = findViewById(R.id.leagues_listing);
@@ -59,5 +59,4 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-    }
-}
+ */

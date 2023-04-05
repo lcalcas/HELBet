@@ -1,14 +1,14 @@
 package com.example.requestsapi;
 
-import java.util.List;
-
-public class League implements DBData{
+public class Club {
     private String id;
     private String name;
     private String logo;
 
-    public League() {}
-    public League(String name, String logo) {
+    public Club() {
+    }
+
+    public Club(String name, String logo) {
         this.name = name;
         this.logo = logo;
     }

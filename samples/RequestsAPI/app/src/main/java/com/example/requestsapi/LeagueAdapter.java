@@ -26,7 +26,7 @@ public class LeagueAdapter extends RecyclerView.Adapter<LeagueAdapter.LeagueView
     @NonNull
     @Override
     public LeagueViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View leagueView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_league, parent, false);
+        View leagueView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_league, parent, false);
         return new LeagueViewHolder(leagueView);
     }
 
@@ -34,9 +34,9 @@ public class LeagueAdapter extends RecyclerView.Adapter<LeagueAdapter.LeagueView
     public void onBindViewHolder(@NonNull LeagueViewHolder holder, int position) {
         League league = listLeagues.get(position);
 
-        holder.nameView.setText(league.name);
+        holder.nameView.setText(league.getName());
         Glide.with(holder.itemView.getContext())
-                .load(league.logo)
+                .load(league.getLogo())
                 .error(R.drawable.error_image)
                 .into(holder.logoView);
     }

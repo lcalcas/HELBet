@@ -1,7 +1,7 @@
 package com.example.requestsapi;
 
-import static com.example.requestsapi.Secret.API_URL;
-import static com.example.requestsapi.Secret.HEADERS;
+import static com.example.requestsapi.APIConfig.API_URL;
+import static com.example.requestsapi.APIConfig.HEADERS;
 
 
 import android.content.Context;
@@ -17,47 +17,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.IOException;
 import java.util.Map;
 
 public class APIManager {
-    String apiUrl = API_URL;
-    String[] leagueIds = new String[] {"39", "140", "78", "135", "61", "144", "88"};
-    Context context;
-    FirebaseDatabase realtimeDb;
+    private String apiUrl = API_URL;
+    private Context context;
 
-    APIManager(Context context) {
+    public APIManager(Context context) {
         this.context = context;
-        this.realtimeDb = FirebaseDatabase.getInstance();
-        //configConstructor();
     }
 
-    /*void configConstructor() throws XmlPullParserException, IOException {
-        Resources res = this.context.getResources();
-        XmlResourceParser parser = res.getXml(R.xml.api_config);
-        int eventType = parser.getEventType();
-        while (eventType != XmlPullParser.END_DOCUMENT) {
-            if (eventType == XmlPullParser.START_TAG) {
-                String tagName = parser.getName();
-                switch (tagName) {
-                    case "api_url":
-                        this.apiUrl = parser.nextText();
-                        break;
-                    case "api_key":
-                        this.apiKey = parser.nextText();
-                        break;
-                    case "league":
-                        leagueIds.add(parser.getAttributeValue(null, "id"));
-                        break;
-                }
-            }
-            eventType = parser.next();
-        }
-    }*/
-
-    void pushLeagues() {
+    public void getLeagues(String[] leagueIds) {
         for (String leagueId: leagueIds) {
             String requestUrl = this.apiUrl.concat("leagues?current=true&id=" + leagueId);
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, requestUrl, null,
@@ -69,12 +40,13 @@ public class APIManager {
                                 System.out.println(responseData);
                                 for (int i = 0; i < responseData.length(); i++) {
                                     JSONObject leagueData = new JSONObject(responseData.get(i).toString()).getJSONObject("league");
-                                    String leagueKey = leagueData.getString("id");
+                                    String leagueId = leagueData.getString("id");
                                     String leagueName = leagueData.getString("name");
                                     String leagueLogo = leagueData.getString("logo");
 
                                     League league = new League(leagueName, leagueLogo);
-                                    realtimeDb.getReference("leagues").child(leagueKey).setValue(league);
+                                    league.setId(leagueId);
+                                    DBManager.getInstance().storeLeague(league);
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
