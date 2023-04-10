@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @IgnoreExtraProperties
-public class User implements DBData{
-    @Exclude
-    private String id;
+public class User extends DBModel{
 
     private String email;
     private List<Club> favoriteClubs;
@@ -22,14 +20,6 @@ public class User implements DBData{
     public User(String email) {
         this.email = email;
         this.favoriteClubs = new ArrayList<>();
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getEmail() {
@@ -49,6 +39,14 @@ public class User implements DBData{
     }
 
     public boolean isFavorite(Club club) {
-        return (favoriteClubs.contains(club)) ? true: false;
+        return (favoriteClubs == null) ? false : (favoriteClubs.contains(club)) ? true: false;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", favoriteClubs=" + favoriteClubs +
+                "} " + super.toString();
     }
 }

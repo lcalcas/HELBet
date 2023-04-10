@@ -1,6 +1,7 @@
 package com.example.requestsapi;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,11 +35,21 @@ public class LeagueAdapter extends RecyclerView.Adapter<LeagueAdapter.LeagueView
     public void onBindViewHolder(@NonNull LeagueViewHolder holder, int position) {
         League league = listLeagues.get(position);
 
-        holder.nameView.setText(league.getName());
         Glide.with(holder.itemView.getContext())
                 .load(league.getLogo())
                 .error(R.drawable.error_image)
                 .into(holder.logoView);
+        holder.nameView.setText(league.getName());
+        holder.nameView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, ClubsActivity.class);
+                intent.putExtra("league_id", league.getId());
+                context.startActivity(intent);
+                ((LeaguesActivity) context).finish();
+            }
+        });
+
     }
 
     @Override

@@ -14,6 +14,9 @@
         android:theme="@style/Theme.RequestsAPI"
         tools:targetApi="31">
         <activity
+            android:name=".LoadingActivity"
+            android:exported="false" />
+        <activity
             android:name=".TestActivity"
             android:exported="false" />
         <activity
@@ -33,7 +36,7 @@
             android:exported="false" />
         <activity
             android:name=".LeaguesActivity"
-            android:exported="false" />
+            android:exported="true"></activity>
     </application>
 
 </manifest>

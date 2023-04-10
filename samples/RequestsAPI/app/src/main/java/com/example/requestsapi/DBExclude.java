@@ -3,13 +3,12 @@ package com.example.requestsapi;
 import java.util.HashMap;
 import java.util.Map;
 
-public interface DBData {
-    @interface DBExclude {}
-
+public interface DBExclude {
+    @interface DBExcludeField {}
     default Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();
         for (java.lang.reflect.Field field : getClass().getDeclaredFields()) {
-            if (field.isAnnotationPresent(DBExclude.class)) {
+            if (field.isAnnotationPresent(DBExcludeField.class)) {
                 continue;
             }
             try {

@@ -2,8 +2,8 @@ package com.example.requestsapi;
 
 import java.util.List;
 
-public class League implements DBData{
-    private String id;
+public class League extends DBModel {
+
     private String name;
     private String logo;
 
@@ -11,14 +11,6 @@ public class League implements DBData{
     public League(String name, String logo) {
         this.name = name;
         this.logo = logo;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -35,5 +27,13 @@ public class League implements DBData{
 
     public void setLogo(String logo) {
         this.logo = logo;
+    }
+
+    @Override
+    public String toString() {
+        return "League{" +
+                "name='" + name + '\'' +
+                ", logo='" + logo + '\'' +
+                "} " + super.toString();
     }
 }

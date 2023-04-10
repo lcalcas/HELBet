@@ -41,7 +41,7 @@ public class Login extends AppCompatActivity {
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            Intent intent = new Intent(Login.this, LeaguesActivity.class);
+            Intent intent = new Intent(Login.this, TestActivity.class);
             startActivity(intent);
         }
     }

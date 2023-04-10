@@ -40,7 +40,7 @@ public class Register extends AppCompatActivity {
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            Intent intent = new Intent(Register.this, LeaguesActivity.class);
+            Intent intent = new Intent(Register.this, TestActivity.class);
             startActivity(intent);
         }
     }

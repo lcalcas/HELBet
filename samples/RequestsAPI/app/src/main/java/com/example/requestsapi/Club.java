@@ -1,24 +1,18 @@
 package com.example.requestsapi;
 
-public class Club {
-    private String id;
+import java.util.List;
+
+public class Club extends DBModel {
+
     private String name;
     private String logo;
+    private String leagueId;
 
-    public Club() {
-    }
-
-    public Club(String name, String logo) {
+    public Club() {}
+    public Club(String name, String logo, String leagueId) {
         this.name = name;
         this.logo = logo;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+        this.leagueId = leagueId;
     }
 
     public String getName() {
@@ -35,5 +29,21 @@ public class Club {
 
     public void setLogo(String logo) {
         this.logo = logo;
+    }
+
+    public String getLeagueId() {
+        return this.leagueId;
+    }
+
+    public void setLeagueId(String leagueId) {
+        this.leagueId = leagueId;
+    }
+
+    @Override
+    public String toString() {
+        return "Club{" +
+                "name='" + name + '\'' +
+                ", logo='" + logo + '\'' +
+                "} " + super.toString();
     }
 }

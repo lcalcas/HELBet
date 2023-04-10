@@ -1,6 +1,7 @@
 package com.example.requestsapi;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -11,23 +12,27 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
 public class ClubAdapter extends RecyclerView.Adapter<ClubAdapter.ClubViewHolder> {
+    private Context context;
+    private List<Club> listClubs;
+    private User user;
 
-    public Context context;
-    public List<Club> listClubs;
-
-    public ClubAdapter(Context context, List<Club> listClubs) {
+    public ClubAdapter(Context context, List<Club> listClubs, User user) {
         this.context = context;
         this.listClubs = listClubs;
+        this.user = user;
     }
 
     @NonNull
     @Override
     public ClubViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return null;
+        View clubView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_club, parent, false );
+        return new ClubViewHolder(clubView);
     }
 
     @Override
@@ -39,13 +44,12 @@ public class ClubAdapter extends RecyclerView.Adapter<ClubAdapter.ClubViewHolder
                 .error(R.drawable.error_image)
                 .into(holder.logoView);
         holder.nameView.setText(club.getName());
-
-
+        holder.switchView.setChecked(user.isFavorite(club));
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return listClubs.size();
     }
 
     public class ClubViewHolder extends RecyclerView.ViewHolder {

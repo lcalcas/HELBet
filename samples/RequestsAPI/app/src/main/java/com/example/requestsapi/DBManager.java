@@ -1,8 +1,18 @@
 package com.example.requestsapi;
 
-import com.google.firebase.database.FirebaseDatabase;
+import androidx.annotation.NonNull;
 
-public class DBManager {
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class DBManager<T> {
     private static DBManager singleton;
 
     private FirebaseDatabase dbRealtime;
@@ -31,5 +41,93 @@ public class DBManager {
     public void storeLeague(League league) {
         String leagueKey = league.getId();
         dbRealtime.getReference("leagues").child(leagueKey).setValue(league.toMap());
+    }
+
+    public void storeClub(Club club) {
+        String clubKey = club.getId();
+        dbRealtime.getReference("clubs").child(clubKey).setValue(club.toMap());
+    }
+
+/*    public void storeModel(String refPath, DBModel model, Class<T> _class) {
+        String key = model.getId();
+        dbRealtime.getReference(refPath).child(key).setValue((_class) model)
+    }*/
+
+    public void fetchRef(String refPath, Class<T> _class, OnFetchMultCompleteListener listener) {
+        DatabaseReference ref = dbRealtime.getReference(refPath);
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<T> result = new ArrayList<>();
+                for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
+                    T resultItem = dataSnapshot.getValue(_class);
+                    if (resultItem instanceof DBModel) {
+                        ((DBModel) resultItem).setId(dataSnapshot.getKey());
+                    }
+                    result.add(resultItem);
+                }
+                listener.onFetchMultComplete(result);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void fetch(String refPath, String key, Class<T> _class, OnFetchSingCompleteListener listener) {
+        DatabaseReference ref = dbRealtime.getReference(refPath).child(key);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                T result = snapshot.getValue(_class);
+                if (result instanceof DBModel) {
+                    ((DBModel) result).setId(snapshot.getKey());
+                }
+                listener.onFetchComplete(result);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error
+            }
+        });
+    }
+
+    public void fetchFiltered(String refPath, Map<String, String> params, Class<T> _class, OnFetchMultCompleteListener listener) {
+        DatabaseReference ref = dbRealtime.getReference(refPath);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<T> result = new ArrayList<>();
+                for (DataSnapshot dataSnapshot: snapshot.getChildren()) {
+                    boolean add = true;
+                    for (Map.Entry<String, String> entry: params.entrySet()) {
+                        if (dataSnapshot.hasChild(entry.getKey())) {
+                            if (!dataSnapshot.child(entry.getKey()).getValue(String.class).equals(entry.getValue())) {
+                                add = false;
+                            }
+                        } else {
+                            add = false;
+                        }
+                    }
+                    if (add) {
+                        T resultItem = dataSnapshot.getValue(_class);
+                        if (resultItem instanceof DBModel) {
+                            ((DBModel) resultItem).setId(dataSnapshot.getKey());
+                        }
+                        result.add(resultItem);
+                    }
+                }
+                listener.onFetchMultComplete(result);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error
+            }
+        });
     }
 }
