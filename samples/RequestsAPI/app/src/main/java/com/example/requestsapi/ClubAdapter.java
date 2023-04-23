@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -45,6 +46,18 @@ public class ClubAdapter extends RecyclerView.Adapter<ClubAdapter.ClubViewHolder
                 .into(holder.logoView);
         holder.nameView.setText(club.getName());
         holder.switchView.setChecked(user.isFavorite(club));
+        holder.switchView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    user.addFavoriteClub(club);
+                } else {
+                    user.removeFavoriteClub(club);
+                }
+
+                DBManager.getInstance().storeObject(user, "users");
+            }
+        });
     }
 
     @Override

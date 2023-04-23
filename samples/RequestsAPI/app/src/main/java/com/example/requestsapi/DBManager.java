@@ -48,10 +48,10 @@ public class DBManager<T> {
         dbRealtime.getReference("clubs").child(clubKey).setValue(club.toMap());
     }
 
-/*    public void storeModel(String refPath, DBModel model, Class<T> _class) {
-        String key = model.getId();
-        dbRealtime.getReference(refPath).child(key).setValue((_class) model)
-    }*/
+    public <T extends DBModel> void storeObject(T o, String pathRef) {
+        String key = o.getId();
+        dbRealtime.getReference(pathRef).child(key).setValue(o.toMap());
+    }
 
     public void fetchRef(String refPath, Class<T> _class, OnFetchMultCompleteListener listener) {
         DatabaseReference ref = dbRealtime.getReference(refPath);

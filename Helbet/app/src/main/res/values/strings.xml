@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">HelBet</string>
+    <string name="input_email_hint">Adresse e-mail</string>
+    <string name="input_password_hint">Mot de passe</string>
+    <string name="login_redirect">Se connecter</string>
+    <string name="register_redirect">S\'enregistrer</string>
+    <string name="login_title">Connexion</string>
+    <string name="register_title">Inscription</string>
+    <string name="missing_ressource">RESSOURCE MANQUANTE</string>
+</resources>

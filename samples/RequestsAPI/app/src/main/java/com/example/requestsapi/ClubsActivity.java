@@ -67,7 +67,6 @@ public class ClubsActivity extends AppCompatActivity {
                                             result) {
                                         clubs.add((Club) o);
                                     }
-                                    System.out.println(clubs);
                                     clubsAdapter = new ClubAdapter(ClubsActivity.this, clubs, currentUser);
                                     clubsView = findViewById(R.id.clubs_view);
                                     clubsView.setLayoutManager(new LinearLayoutManager(ClubsActivity.this));

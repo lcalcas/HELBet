@@ -18,6 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +30,10 @@ public class APIManager {
         this.context = context;
     }
 
-    public void getLeagues(OnUploadCompleteListener callback) {
+    public void getLeagues (OnUploadCompleteListener callback) {
+        ArrayList<League> downloadedLeagues = new ArrayList<>();
+        int downloadedCounter = 0;
+
         for (String leagueId: LEAGUE_IDS) {
             String requestUrl = this.apiUrl.concat("leagues?current=true&id=" + leagueId);
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, requestUrl, null,
@@ -46,11 +50,14 @@ public class APIManager {
 
                                     League league = new League(leagueName, leagueLogo);
                                     league.setId(leagueId);
-                                    DBManager.getInstance().storeLeague(league);
+
+                                    downloadedLeagues.add(league);
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+
+                            downloadedCounter = downloadedCounter + 1;
 
                             callback.onUploadComplete();
                         }

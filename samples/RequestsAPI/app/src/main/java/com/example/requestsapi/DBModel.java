@@ -8,10 +8,6 @@ public abstract class DBModel implements DBExclude {
 
     public DBModel() {}
 
-    public DBModel(String id) {
-        this.id = id;
-    }
-
     public String getId() {
         return id;
     }

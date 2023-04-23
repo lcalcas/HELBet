@@ -13,6 +13,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 public class TestActivity extends AppCompatActivity {
     FirebaseUser authUser = FirebaseAuth.getInstance().getCurrentUser();
     User currentUser;
@@ -58,7 +63,7 @@ public class TestActivity extends AppCompatActivity {
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Intent intent = new Intent(TestActivity.this, LeaguesActivity.class);
+                                Intent intent = new Intent(TestActivity.this, LoadingActivity.class);
                                 startActivity(intent);
                                 finish();
                             }
