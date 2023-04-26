@@ -3,6 +3,7 @@ package com.example.helbet;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.Context;
+import android.telecom.Call;
 
 import androidx.annotation.NonNull;
 
@@ -12,7 +13,9 @@ import com.google.android.gms.tasks.Task;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-public class DataManager {
+import kotlin.jvm.internal.Lambda;
+
+public class DataManager  {
     private static DataManager singleton;
     private APIManager apiManager;
     private DBManager dbManager;
@@ -37,12 +40,21 @@ public class DataManager {
     }
 
     public void dlAndStoreLeague(String leagueId) {
+        dlAndStoreLeague(leagueId, null);
+    }
+
+    public void dlAndStoreLeague(String leagueId, OnDataUpdatedListener listener) {
         apiManager.dlLeague(leagueId, new OnDownloadCompleteListener<League>() {
             @Override
             public <T extends DBModel> void onDownloadComplete(ArrayList<T> downloadResult) {
                 League league = (League) downloadResult.get(0);
                 dbManager.storeObject(league, PathRefs.LEAGUES_PATHREF,
-                        task -> System.out.println("'" + league.getName() + ", " + league.getSeasonYear() + "' - successfully downloaded and uploaded to db. ref=" + PathRefs.LEAGUES_PATHREF)
+                        task -> {
+                            System.out.println("[LOG] '" + league.getName() + ", " + league.getSeasonYear() + "' - successfully downloaded and uploaded to db. ref=" + PathRefs.LEAGUES_PATHREF);
+                            if (listener != null) {
+                                listener.onDataUpdated();
+                            }
+                        }
                 );
             }
         });
@@ -61,7 +73,7 @@ public class DataManager {
                                 for (T tClub: downloadResult) {
                                     Club club = (Club) tClub;
                                     dbManager.storeObject(club, PathRefs.CLUBS_PATHREF,
-                                            task -> System.out.println("'" + club.getName() + ", " + seasonYear + "' - successfully downloaded and uploaded to db. ref=" + PathRefs.CLUBS_PATHREF)
+                                            task -> System.out.println("[LOG] '" + club.getName() + ", " + seasonYear + "' - successfully downloaded and uploaded to db. ref=" + PathRefs.CLUBS_PATHREF)
                                     );
                                 }
                             }
@@ -83,12 +95,17 @@ public class DataManager {
 
     public void dlAndStoreLeaguesAndClubs(String[] leagueIds) {
         for (String leagueId: leagueIds) {
-            dlAndStoreLeague(leagueId);
-            dlAndStoreLeagueClubs(leagueId);
+            dlAndStoreLeague(leagueId, () -> {
+                dlAndStoreLeagueClubs(leagueId);
+            });
         }
     }
 
     public void dlAndStoreLeaguesAndClubs() {
         dlAndStoreLeaguesAndClubs(LEAGUE_IDS);
     }
+}
+
+interface OnDataUpdatedListener {
+    void onDataUpdated();
 }

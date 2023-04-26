@@ -29,7 +29,7 @@ public class Club extends DBModel {
         this.leagueId = leagueId;
     }
 
-    public Club(Club c) {
+    public Club(@NonNull Club c) {
         this.name = c.getName();
         this.logoUrl = c.getLogoUrl();
         this.leagueId = c.getLeagueId();
@@ -95,11 +95,13 @@ class ClubItemAdapter extends RecyclerView.Adapter<ClubItemAdapter.ClubItemViewH
     public void onBindViewHolder(@NonNull ClubItemViewHolder holder, int position) {
         ClubItemDataModel club = clubs.get(position);
 
+        holder.clubNameView.setText(club.getName());
+
         Glide.with(holder.itemView.getContext())
                 .load(club.getLogoUrl())
                 .error(R.drawable.error_image)
                 .into(holder.clubLogoView);
-        holder.clubNameView.setText(club.getName());
+
         holder.clubFavoriteView.setChecked(user.isClubFavorite(club.getId()));
         holder.clubFavoriteView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -117,10 +119,10 @@ class ClubItemAdapter extends RecyclerView.Adapter<ClubItemAdapter.ClubItemViewH
 
     @Override
     public int getItemCount() {
-        return clubs.size();
+        return (clubs == null)? 0: clubs.size();
     }
 
-    class ClubItemViewHolder extends RecyclerView.ViewHolder {
+    public class ClubItemViewHolder extends RecyclerView.ViewHolder {
         private ImageView clubLogoView;
         private TextView clubNameView;
         private Switch clubFavoriteView;

@@ -4,11 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ListingActivity">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/leagues_recyclerview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    tools:context=".BaseActivity">
 
 </androidx.constraintlayout.widget.ConstraintLayout>

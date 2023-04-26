@@ -17,7 +17,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity {
     private AuthManager auth;
     private DBManager db;
 
@@ -47,13 +47,15 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+    }
 
-        if (auth.isAuthenticated()) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        }
+    @Override
+    protected void userLogged() {
+        goToMain();
+    }
 
+    @Override
+    protected void userUnLogged() {
         progressBar.setVisibility(View.INVISIBLE);
         submit.setText("Connexion");
         submit.setEnabled(false);
@@ -97,22 +99,22 @@ public class LoginActivity extends AppCompatActivity {
                                     startActivity(intent);
                                     finish();
                                 } else {
-                                    Toast.makeText(LoginActivity.this, "Erreur !", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(LoginActivity.this, "Erreur {" + fetchResult.size() + "} enregistrement(s) des informations.", Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
                     } else {
-                        Toast.makeText(this, "Erreur !", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, "Erreur, vérifiez vos informations.", Toast.LENGTH_LONG).show();
                         progressBar.setVisibility(View.GONE);
                     }
                 });
             } else {
-                Toast.makeText(this, "Erreur !", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Erreur, champs vides.", Toast.LENGTH_LONG).show();
             }
         });
 
         back.setOnClickListener(view -> {
-            finish();
+            goToMain();
         });
 
         registerRedirect.setOnClickListener(view -> {

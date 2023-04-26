@@ -43,7 +43,11 @@ public class DBManager {
         }
     }
 
-    public <T extends DBModel> void fetchQuery(Query q, Class<T> _class, boolean multiple, OnFetchCompleteListener listener) {
+    public void deleteObject(String key, String pathRef) {
+        dbRealtime.getReference(pathRef).child(key).setValue(null);
+    }
+
+    public <T extends DBModel> void fetchQuery(@NonNull Query q, Class<T> _class, boolean multiple, OnFetchCompleteListener listener) {
         q.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
@@ -60,7 +64,6 @@ public class DBManager {
                     resultItem.setId(snapshot.getKey());
                     result.add(resultItem);
                 }
-
                 listener.onFetchComplete(result);
             }
 

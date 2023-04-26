@@ -17,10 +17,7 @@ import android.widget.Toast;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class RegisterActivity extends AppCompatActivity {
-
-    private AuthManager auth;
-    private DBManager db;
+public class RegisterActivity extends BaseActivity {
 
     private ImageView back;
     private EditText emailInput;
@@ -34,9 +31,6 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        auth = AuthManager.getInstance();
-        db = DBManager.getInstance();
-
         back = findViewById(R.id.back_activity); // retour arrière
         emailInput = findViewById(R.id.input_email);
         pswdInput = findViewById(R.id.input_password);
@@ -48,13 +42,15 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+    }
 
-        if (auth.isAuthenticated()) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        }
+    @Override
+    protected void userLogged() {
+        goToMain();
+    }
 
+    @Override
+    protected void userUnLogged() {
         progressBar.setVisibility(View.INVISIBLE);
         submit.setText("Enregistrement");
         submit.setEnabled(false);
@@ -62,7 +58,7 @@ public class RegisterActivity extends AppCompatActivity {
         AuthFormTextWatcher submit_textWatcher = editable -> {
             if (
                     emailInput.getText().toString().matches(AuthFormTextWatcher.regexEmail)
-                    && pswdInput.getText().toString().matches(AuthFormTextWatcher.regexPassword)
+                            && pswdInput.getText().toString().matches(AuthFormTextWatcher.regexPassword)
             ) {
                 submit.setEnabled(true);
             } else {
@@ -93,16 +89,16 @@ public class RegisterActivity extends AppCompatActivity {
                                 finish();
                             } else {
                                 authTask.getResult().getUser().delete();
-                                Toast.makeText(this, "Erreur !", Toast.LENGTH_LONG);
+                                Toast.makeText(this, "Erreur enregistrement bdd", Toast.LENGTH_LONG);
                             }
                         });
                     } else {
-                        Toast.makeText(this, "Erreur !", Toast.LENGTH_LONG);
+                        Toast.makeText(this, "Erreur enregistrement utilisateur", Toast.LENGTH_LONG);
                         progressBar.setVisibility(View.GONE);
                     }
                 });
             } else {
-                Toast.makeText(this, "Erreur !", Toast.LENGTH_LONG);
+                Toast.makeText(this, "Erreur champs vides", Toast.LENGTH_LONG);
             }
         });
 

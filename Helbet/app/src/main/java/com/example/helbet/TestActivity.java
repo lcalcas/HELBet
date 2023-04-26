@@ -6,31 +6,35 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 
-public class TestActivity extends AppCompatActivity {
+public class TestActivity extends BaseActivity {
 
-    Button app = findViewById(R.id.app);
-    Button logout = findViewById(R.id.logout);
-    Button delete = findViewById(R.id.delete);
+    Button app;
+    Button update;
+    Button logout;
+    Button delete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
 
-        if (!AuthManager.getInstance().isAuthenticated()) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        }
+        app = findViewById(R.id.app);
+        update = findViewById(R.id.update);
+        logout = findViewById(R.id.logout);
+        delete = findViewById(R.id.delete);
+    }
 
+    @Override
+    protected void userLogged() {
         app.setOnClickListener(view -> {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+            Intent i = new Intent(this, ListingActivity.class);
+            startActivity(i);
             finish();
         });
+    }
 
-        logout.setOnClickListener(view -> {
-
-        });
+    @Override
+    protected void userUnLogged() {
+        goToMain();
     }
 }

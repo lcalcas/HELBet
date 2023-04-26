@@ -12,11 +12,12 @@ import com.google.firebase.auth.FirebaseUser;
 public class AuthManager {
     private static AuthManager singleton;
 
-    FirebaseAuth mAuth;
-    FirebaseUser mUser;
+    private static FirebaseAuth mAuth;
+    private FirebaseUser mUser;
 
     private AuthManager() {
-        this.mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        this.mUser = mAuth.getCurrentUser();
     }
 
 
@@ -29,12 +30,11 @@ public class AuthManager {
     }
 
     public FirebaseUser getUser() {
-        this.mUser = mAuth.getCurrentUser();
-        return mUser;
+        return this.mUser;
     }
 
     public boolean isAuthenticated() {
-        return getUser() != null;
+        return this.mUser != null;
     }
 
     public void createUser(String email, String pswd, OnCompleteListener<AuthResult> listener) {
@@ -44,12 +44,16 @@ public class AuthManager {
     public void loginUser(String email, String pswd, OnCompleteListener<AuthResult> listener) {
         mAuth.signInWithEmailAndPassword(email, pswd).addOnCompleteListener(listener);
     }
+
+    public void logoutUser() {
+        mAuth.signOut();
+    }
 }
 
 interface AuthFormTextWatcher extends TextWatcher {
 
     String regexEmail = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-    String regexPassword = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
+    String regexPassword = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
 
     @Override
     default void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {};

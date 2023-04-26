@@ -27,11 +27,15 @@ public class User extends DBModel{
     }
 
     public void addFavoriteClub(String clubId) {
+        if (this.favoriteClubs == null)
+            this.favoriteClubs = new ArrayList<>();
         this.favoriteClubs.add(clubId);
     }
 
     public void removeFavoriteClub(String clubId) {
-        this.favoriteClubs.remove(clubId);
+        if (this.favoriteClubs != null) {
+            this.favoriteClubs.remove(clubId);
+        }
     }
 
     public boolean isClubFavorite(String clubId) {
