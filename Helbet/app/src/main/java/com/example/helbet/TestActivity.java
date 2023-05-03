@@ -16,7 +16,6 @@ public class TestActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test);
 
         app = findViewById(R.id.app);
         update = findViewById(R.id.update);
@@ -25,11 +24,41 @@ public class TestActivity extends BaseActivity {
     }
 
     @Override
+    public int getContentLayoutId() {
+        return R.layout.activity_test;
+    }
+
+    @Override
+    public String getCurrentTitle() {
+        return "Accueil";
+    }
+
+    private void logout() {
+        session.setCurrentUser(null);
+        auth.logoutUser();
+        finish();
+    }
+
+    @Override
     protected void userLogged() {
         app.setOnClickListener(view -> {
             Intent i = new Intent(this, ListingActivity.class);
             startActivity(i);
-            finish();
+        });
+
+        update.setOnClickListener(view -> {
+            data.dlAndStoreLeaguesAndClubs();
+        });
+
+        logout.setOnClickListener(view -> {
+            logout();
+        });
+
+        delete.setOnClickListener(view -> {
+            User user = session.getCurrentUser();
+            db.deleteObject(user.getId(), PathRefs.USERS_PATHREF);
+            auth.getUser().delete();
+            logout();
         });
     }
 

@@ -8,14 +8,10 @@
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
 
-    <include layout="@layout/frame_toolbar"
-        />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/toolBar">
+        android:orientation="vertical" >
 
         <TextView
             android:layout_width="match_parent"

@@ -2,8 +2,6 @@ package com.example.helbet;
 
 import static com.example.helbet.PathRefs.USERS_PATHREF;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -18,10 +16,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class LoginActivity extends BaseActivity {
-    private AuthManager auth;
-    private DBManager db;
 
-    private ImageView back;
     private EditText emailInput;
     private EditText pswdInput;
     private ProgressBar progressBar;
@@ -31,17 +26,25 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
 
         auth = AuthManager.getInstance();
         db = DBManager.getInstance();
 
-        back = findViewById(R.id.back_activity);
         emailInput = findViewById(R.id.input_email);
         pswdInput = findViewById(R.id.input_password);
         progressBar = findViewById(R.id.progressBar);
         submit = findViewById(R.id.button_submit);
         registerRedirect = findViewById(R.id.register_redirect);
+    }
+
+    @Override
+    public int getContentLayoutId() {
+        return R.layout.activity_login;
+    }
+
+    @Override
+    public String getCurrentTitle() {
+        return "Connexion";
     }
 
     @Override
@@ -91,11 +94,9 @@ public class LoginActivity extends BaseActivity {
                                     User user = (User) fetchResult.get(0);
                                     user.setId(userId);
 
-                                    Bundle bundle = new Bundle();
-                                    bundle.putSerializable("user", user);
+                                    session.setCurrentUser(user);
 
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                    intent.putExtras(bundle);
                                     startActivity(intent);
                                     finish();
                                 } else {
@@ -111,10 +112,6 @@ public class LoginActivity extends BaseActivity {
             } else {
                 Toast.makeText(this, "Erreur, champs vides.", Toast.LENGTH_LONG).show();
             }
-        });
-
-        back.setOnClickListener(view -> {
-            goToMain();
         });
 
         registerRedirect.setOnClickListener(view -> {

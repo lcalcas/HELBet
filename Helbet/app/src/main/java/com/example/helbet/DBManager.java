@@ -47,7 +47,7 @@ public class DBManager {
         dbRealtime.getReference(pathRef).child(key).setValue(null);
     }
 
-    public <T extends DBModel> void fetchQuery(@NonNull Query q, Class<T> _class, boolean multiple, OnFetchCompleteListener listener) {
+    public <T extends DBModel> void fetchQuery(@NonNull Query q, Class<T> _class, boolean multiple, OnFetchCompleteListener<T> listener) {
         q.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
@@ -61,9 +61,12 @@ public class DBManager {
                     });
                 } else {
                     T resultItem = snapshot.getValue(_class);
+                    System.out.println(resultItem);
                     resultItem.setId(snapshot.getKey());
                     result.add(resultItem);
                 }
+                System.out.println("snapshot: " + snapshot);
+                System.out.println(result);
                 listener.onFetchComplete(result);
             }
 
@@ -97,6 +100,7 @@ class PathRefs {
     public static final String USERS_PATHREF = "users";
     public static final String LEAGUES_PATHREF = "leagues";
     public static final String CLUBS_PATHREF = "clubs";
+    public static final String GAMESOTDAY_PATHREF = "gamesOfTheDay";
 }
 
 interface OnFetchCompleteListener<T> {

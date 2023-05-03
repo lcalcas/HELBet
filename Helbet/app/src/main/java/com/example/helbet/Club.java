@@ -3,6 +3,7 @@ package com.example.helbet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -103,6 +104,7 @@ class ClubItemAdapter extends RecyclerView.Adapter<ClubItemAdapter.ClubItemViewH
                 .into(holder.clubLogoView);
 
         holder.clubFavoriteView.setChecked(user.isClubFavorite(club.getId()));
+        //holder.clubFavoriteView.setChecked(user.isFavorite(club));
         holder.clubFavoriteView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -111,6 +113,11 @@ class ClubItemAdapter extends RecyclerView.Adapter<ClubItemAdapter.ClubItemViewH
                 } else {
                     user.removeFavoriteClub(club.getId());
                 }
+//                if (b) {
+//                    user.addFavoriteClub(club);
+//                } else {
+//                    user.removeFavoriteClub(club);
+//                }
 
                 DBManager.getInstance().storeObject(user, "users");
             }
@@ -125,7 +132,7 @@ class ClubItemAdapter extends RecyclerView.Adapter<ClubItemAdapter.ClubItemViewH
     public class ClubItemViewHolder extends RecyclerView.ViewHolder {
         private ImageView clubLogoView;
         private TextView clubNameView;
-        private Switch clubFavoriteView;
+        private CheckBox clubFavoriteView;
 
         public ClubItemViewHolder(@NonNull View itemView) {
             super(itemView);

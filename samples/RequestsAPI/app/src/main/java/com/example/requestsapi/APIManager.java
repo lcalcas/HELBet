@@ -32,8 +32,6 @@ public class APIManager {
 
     public void getLeagues (OnUploadCompleteListener callback) {
         ArrayList<League> downloadedLeagues = new ArrayList<>();
-        int downloadedCounter = 0;
-
         for (String leagueId: LEAGUE_IDS) {
             String requestUrl = this.apiUrl.concat("leagues?current=true&id=" + leagueId);
             JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, requestUrl, null,
@@ -56,9 +54,6 @@ public class APIManager {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-
-                            downloadedCounter = downloadedCounter + 1;
-
                             callback.onUploadComplete();
                         }
                     }, new Response.ErrorListener() {

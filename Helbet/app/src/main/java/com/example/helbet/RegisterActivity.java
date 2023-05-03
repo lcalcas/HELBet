@@ -2,8 +2,6 @@ package com.example.helbet;
 
 import static com.example.helbet.PathRefs.USERS_PATHREF;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -15,11 +13,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.ArrayList;
 
 public class RegisterActivity extends BaseActivity {
 
-    private ImageView back;
     private EditText emailInput;
     private EditText pswdInput;
     private ProgressBar progressBar;
@@ -29,14 +26,22 @@ public class RegisterActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
 
-        back = findViewById(R.id.back_activity); // retour arrière
         emailInput = findViewById(R.id.input_email);
         pswdInput = findViewById(R.id.input_password);
         progressBar = findViewById(R.id.progressBar); // chargement enregistrement
         submit = findViewById(R.id.button_submit);
         loginRedirect = findViewById(R.id.login_redirect);
+    }
+
+    @Override
+    public int getContentLayoutId() {
+        return R.layout.activity_register;
+    }
+
+    @Override
+    public String getCurrentTitle() {
+        return "Enregistrement";
     }
 
     @Override
@@ -100,10 +105,6 @@ public class RegisterActivity extends BaseActivity {
             } else {
                 Toast.makeText(this, "Erreur champs vides", Toast.LENGTH_LONG);
             }
-        });
-
-        back.setOnClickListener(view -> {
-            finish();
         });
 
         loginRedirect.setOnClickListener(view -> {

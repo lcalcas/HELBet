@@ -13,13 +13,10 @@ public class AuthManager {
     private static AuthManager singleton;
 
     private static FirebaseAuth mAuth;
-    private FirebaseUser mUser;
 
     private AuthManager() {
         mAuth = FirebaseAuth.getInstance();
-        this.mUser = mAuth.getCurrentUser();
     }
-
 
     public synchronized static AuthManager getInstance() {
         if (singleton == null) {
@@ -30,11 +27,11 @@ public class AuthManager {
     }
 
     public FirebaseUser getUser() {
-        return this.mUser;
+        return mAuth.getCurrentUser();
     }
 
     public boolean isAuthenticated() {
-        return this.mUser != null;
+        return getUser() != null;
     }
 
     public void createUser(String email, String pswd, OnCompleteListener<AuthResult> listener) {
@@ -47,6 +44,7 @@ public class AuthManager {
 
     public void logoutUser() {
         mAuth.signOut();
+
     }
 }
 

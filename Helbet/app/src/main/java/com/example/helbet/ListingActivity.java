@@ -15,11 +15,20 @@ public class ListingActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_listing);
 
         recyclerView = findViewById(R.id.leagues_recyclerview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    @Override
+    public int getContentLayoutId() {
+        return R.layout.activity_listing;
+    }
+
+    @Override
+    public String getCurrentTitle() {
+        return "Parcourir";
     }
 
     @Override
@@ -58,7 +67,7 @@ public class ListingActivity extends BaseActivity {
     }
 
     private void setAdapter() {
-        System.out.println(leaguesForAdapter);
+        User user = session.getCurrentUser();
         LeagueCollectionAdapter leaguesAdapter = new LeagueCollectionAdapter(this, leaguesForAdapter, user);
         recyclerView.setAdapter(leaguesAdapter);
     }

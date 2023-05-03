@@ -83,6 +83,7 @@ public class DBManager<T> {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 T result = snapshot.getValue(_class);
+                System.out.println(result);
                 if (result instanceof DBModel) {
                     ((DBModel) result).setId(snapshot.getKey());
                 }

@@ -104,6 +104,30 @@ public class DataManager  {
     public void dlAndStoreLeaguesAndClubs() {
         dlAndStoreLeaguesAndClubs(LEAGUE_IDS);
     }
+
+    public void dlAndStoreGamesOfTheDay() {
+        dbManager.fetch(PathRefs.LEAGUES_PATHREF, League.class, new OnFetchCompleteListener<League>() {
+            @Override
+            public <T extends DBModel> void onFetchComplete(ArrayList<T> fetchResult) {
+                for (T genLeague:
+                     fetchResult) {
+                    League league = (League) genLeague;
+                    apiManager.dlLeagueGamesOfTheDay(league.getId(), league.getSeasonYear(), new OnDownloadCompleteListener<Game>() {
+                        @Override
+                        public <T extends DBModel> void onDownloadComplete(ArrayList<T> downloadResult) {
+                            for (T genGame:
+                            downloadResult) {
+                                Game game = (Game) genGame;
+                                dbManager.storeObject(game, PathRefs.GAMESOTDAY_PATHREF,
+                                        task -> System.out.println("[LOG] '" + game.getLeagueId() + ", " + game.getHomeClubId() + " vs " + game.getAwayClubId() + "' - successfully downloaded and uploaded to db. ref=" + PathRefs.CLUBS_PATHREF)
+                                );
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
 }
 
 interface OnDataUpdatedListener {
