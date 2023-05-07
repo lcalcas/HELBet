@@ -20,20 +20,23 @@ public class Club extends DBModel {
     private String name;
     private String logoUrl;
     private String leagueId;
+    private String code;
 
     public Club() {
     }
 
-    public Club(String name, String logoUrl, String leagueId) {
+    public Club(String name, String logoUrl, String leagueId, String code) {
         this.name = name;
         this.logoUrl = logoUrl;
         this.leagueId = leagueId;
+        this.code = code;
     }
 
     public Club(@NonNull Club c) {
         this.name = c.getName();
         this.logoUrl = c.getLogoUrl();
         this.leagueId = c.getLeagueId();
+        this.code = c.getCode();
     }
 
     public String getName() {
@@ -60,12 +63,21 @@ public class Club extends DBModel {
         this.leagueId = leagueId;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     @Override
     public String toString() {
         return "Club{" +
                 "name='" + name + '\'' +
                 ", logoUrl='" + logoUrl + '\'' +
                 ", leagueId='" + leagueId + '\'' +
+                ", code='" + code + '\'' +
                 "} " + super.toString();
     }
 }
@@ -113,11 +125,6 @@ class ClubItemAdapter extends RecyclerView.Adapter<ClubItemAdapter.ClubItemViewH
                 } else {
                     user.removeFavoriteClub(club.getId());
                 }
-//                if (b) {
-//                    user.addFavoriteClub(club);
-//                } else {
-//                    user.removeFavoriteClub(club);
-//                }
 
                 DBManager.getInstance().storeObject(user, "users");
             }

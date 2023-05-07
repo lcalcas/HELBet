@@ -45,6 +45,11 @@ public class RegisterActivity extends BaseActivity {
     }
 
     @Override
+    public int getBottomNavSelectItemId() {
+        return R.id.menu_profile;
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
     }

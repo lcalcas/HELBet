@@ -1,19 +1,13 @@
 package com.example.helbet;
 
-import android.app.job.JobParameters;
-import android.app.job.JobService;
 import android.content.Context;
-import android.telecom.Call;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-
-import java.nio.file.Path;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
-import kotlin.jvm.internal.Lambda;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class DataManager  {
     private static DataManager singleton;
@@ -119,7 +113,7 @@ public class DataManager  {
                             downloadResult) {
                                 Game game = (Game) genGame;
                                 dbManager.storeObject(game, PathRefs.GAMESOTDAY_PATHREF,
-                                        task -> System.out.println("[LOG] '" + game.getLeagueId() + ", " + game.getHomeClubId() + " vs " + game.getAwayClubId() + "' - successfully downloaded and uploaded to db. ref=" + PathRefs.CLUBS_PATHREF)
+                                        task -> System.out.println("[LOG] '" + game.getLeagueId() + ", " + game.getHomeClubId() + " vs " + game.getAwayClubId() + "' - successfully downloaded and uploaded to db. ref=" + PathRefs.GAMESOTDAY_PATHREF)
                                 );
                             }
                         }
@@ -128,8 +122,41 @@ public class DataManager  {
             }
         });
     }
+
+    public void fetchGames(OnGamesFetchedListener listener) {
+        dbManager.fetch(PathRefs.GAMESOTDAY_PATHREF, Game.class, new OnFetchCompleteListener<Game>() {
+
+            @Override
+            public <T extends DBModel> void onFetchComplete(ArrayList<T> fetchResult) {
+                ArrayList<Game> oldGames = new ArrayList<>();
+                ArrayList<Game> recentGames = new ArrayList<>();
+
+                for (T gameGen: fetchResult) {
+                    Game g = (Game) gameGen;
+
+                    Calendar currentDateTime = Calendar.getInstance();
+                    long differenceInHours = (currentDateTime.getTimeInMillis() - g.getDateTime().getTimeInMillis()) / (1000 * 60 * 60);
+                    System.out.println("---\n" + g);
+
+                    if (differenceInHours > 24) {
+                        oldGames.add(g);
+                    } else {
+                        recentGames.add(g);
+                    }
+                }
+
+                listener.onOldGamesFetched(oldGames);
+                listener.onRecentGamesFetched(recentGames);
+            }
+        });
+    }
 }
 
 interface OnDataUpdatedListener {
     void onDataUpdated();
+}
+
+interface OnGamesFetchedListener {
+    void onOldGamesFetched(List<Game> gameList);
+    void onRecentGamesFetched(List<Game> gameList);
 }

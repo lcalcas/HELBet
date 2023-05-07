@@ -32,6 +32,11 @@ public class ListingActivity extends BaseActivity {
     }
 
     @Override
+    public int getBottomNavSelectItemId() {
+        return R.id.menu_search;
+    }
+
+    @Override
     protected void userLogged() {
         leaguesForAdapter = new ArrayList<>();
         db.fetch(PathRefs.LEAGUES_PATHREF, League.class, new OnFetchCompleteListener<League>() {

@@ -33,10 +33,13 @@ public class TestActivity extends BaseActivity {
         return "Accueil";
     }
 
+    @Override
+    public int getBottomNavSelectItemId() {
+        return R.id.menu_profile;
+    }
+
     private void logout() {
-        session.setCurrentUser(null);
-        auth.logoutUser();
-        finish();
+
     }
 
     @Override

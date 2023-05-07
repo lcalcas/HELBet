@@ -5,15 +5,15 @@
     <item
         android:id="@+id/menu_home"
         android:icon="@drawable/baseline_home_24"
-        android:title="" />
+        android:title="Menu" />
 
     <item
         android:id="@+id/menu_search"
         android:icon="@drawable/baseline_search_24"
-        android:title="" />
+        android:title="Clubs" />
 
     <item
         android:id="@+id/menu_profile"
         android:icon="@drawable/baseline_person_24"
-        android:title="" />
+        android:title="Profil" />
 </menu>

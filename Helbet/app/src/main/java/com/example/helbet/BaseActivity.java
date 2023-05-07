@@ -2,23 +2,27 @@ package com.example.helbet;
 
 import static com.example.helbet.PathRefs.USERS_PATHREF;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity{
     public final static Class<MainActivity> INDEX = MainActivity.class;
     Session session;
 
@@ -29,6 +33,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     ImageView backArrow;
     TextView fragTitle;
+    BottomNavigationView bottomNav;
 
     @Override
     public void setContentView(int layoutResID) {
@@ -54,11 +59,14 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         backArrow = findViewById(R.id.fb_back);
         fragTitle = findViewById(R.id.fb_title);
+        bottomNav = findViewById(R.id.bottom_nav);
     }
 
     public abstract int getContentLayoutId();
 
     public abstract String getCurrentTitle();
+
+    public abstract int getBottomNavSelectItemId();
 
     private void setCurrentTitle() {
         fragTitle.setText(getCurrentTitle());
@@ -76,6 +84,30 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        bottomNav.setSelectedItemId(getBottomNavSelectItemId());
+        bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Intent i = null;
+                switch (item.getItemId()) {
+                    case R.id.menu_home:
+                        i = new Intent(getApplicationContext(), MainActivity.class);
+                        break;
+                    case R.id.menu_search:
+                        i = new Intent(getApplicationContext(), ListingActivity.class);
+                        break;
+                    case R.id.menu_profile:
+                        i = new Intent(getApplicationContext(), ProfileActivity.class);
+                        break;
+                }
+                if (i != null) {
+                    startActivity(i);
+                    finish();
+                }
+                return true;
+            }
+        });
 
         setToolBar();
         checkUser();
@@ -103,7 +135,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                         }
                     }
                 });
-
             }
         } else {
             System.out.println("NOT AUTHENTICATED");

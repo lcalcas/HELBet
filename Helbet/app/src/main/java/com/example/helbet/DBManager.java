@@ -61,12 +61,9 @@ public class DBManager {
                     });
                 } else {
                     T resultItem = snapshot.getValue(_class);
-                    System.out.println(resultItem);
                     resultItem.setId(snapshot.getKey());
                     result.add(resultItem);
                 }
-                System.out.println("snapshot: " + snapshot);
-                System.out.println(result);
                 listener.onFetchComplete(result);
             }
 
@@ -78,7 +75,7 @@ public class DBManager {
     }
 
     // FETCH - KEY
-    public <T extends DBModel> void fetch(String refPath, String key, Class<T> _class, OnFetchCompleteListener listener) {
+    public <T extends DBModel> void fetch(String refPath, String key, Class<T> _class, OnFetchCompleteListener<T> listener) {
         Query q = dbRealtime.getReference(refPath).child(key);
         fetchQuery(q, _class, false, listener);
     }
@@ -94,6 +91,8 @@ public class DBManager {
         Query q = dbRealtime.getReference(refPath);
         fetchQuery(q, _class, true, listener);
     }
+
+
 }
 
 class PathRefs {

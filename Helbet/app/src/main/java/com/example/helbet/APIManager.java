@@ -10,6 +10,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonObject;
+import com.google.gson.internal.bind.util.ISO8601Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -101,8 +103,9 @@ public class APIManager {
                                 String clubId = clubData.getString("id");
                                 String clubName = clubData.getString("name");
                                 String clubLogo = clubData.getString("logo");
+                                String clubCode = clubData.getString("code");
 
-                                Club club = new Club(clubName, clubLogo, leagueId);
+                                Club club = new Club(clubName, clubLogo, leagueId, clubCode);
                                 club.setId(clubId);
                                 clubs.add(club);
                             }
@@ -131,47 +134,57 @@ public class APIManager {
 
     public void dlLeagueGamesOfTheDay(String leagueId, int seasonYear, OnDownloadCompleteListener<Game> listener) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
         String formattedDate = dateFormat.format(new Date());
         String requestUrl = API_URL.concat("fixtures?season=" + seasonYear + "&league=" + leagueId + "&date=" + formattedDate);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, requestUrl, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
+                        ArrayList<Game> games = new ArrayList<>();
                         try {
                             JSONArray responseData = response.getJSONArray("response");
                             for (int i = 0; i < responseData.length(); i++) {
-                                JSONObject gameData = new JSONObject(responseData.get(i).toString()).getJSONObject("fixture");
-                                // GameId
-                                String gameId = gameData.getString("id");
-                                // LeagueId
-                                // Date
+                                JSONObject gameData = new JSONObject(responseData.get(i).toString());
+                                JSONObject fixtureData = gameData.getJSONObject("fixture");
+                                JSONObject teamsData = gameData.getJSONObject("teams");
+                                JSONObject goalsData = gameData.getJSONObject("goals");
+
                                 SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-                                inputFormat.setTimeZone(
-                                        TimeZone.getTimeZone(gameData.getString("timezone"))
-                                );
+                                inputFormat.setTimeZone(TimeZone.getTimeZone(fixtureData.getString("timezone")));
 
-                                Date dateOnApi = inputFormat.parse(
-                                        gameData.getString("date")
-                                );
+                                Date dateOnApi = inputFormat.parse(fixtureData.getString("date"));
 
-                                SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy");
-                                outputFormat.setTimeZone(
-                                        TimeZone.getDefault()
-                                );
+                                SimpleDateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy");
+                                String formattedDate = dateFormatter.format(dateOnApi);
 
-                                assert dateOnApi != null;
-                                String date = outputFormat.format(dateOnApi);
+                                SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm");
+                                String formattedTime = timeFormatter.format(dateOnApi);
+
                                 // homeClubId
-                                String homeClubId = gameData.getJSONObject("teams").getJSONObject("home").getString("id");
+                                String homeClubId = teamsData.getJSONObject("home").getString("id");
                                 // awayClubId
-                                // result
-
+                                String awayClubId = teamsData.getJSONObject("away").getString("id");
+                                // results
+                                Game game;
+                                if (goalsData.isNull("home") | goalsData.isNull("away")) {
+                                    game = new Game(leagueId, formattedDate, formattedTime, homeClubId, awayClubId);
+                                } else {
+                                    int homeResult = goalsData.optInt("home", 0);
+                                    int awayResult = goalsData.optInt("away", 0);
+                                    game = new Game(leagueId, formattedDate, formattedTime, homeClubId, awayClubId, homeResult, awayResult);
+                                }
+                                System.out.println(game);
+                                game.setId(fixtureData.getString("id"));
+                                games.add(game);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } catch (ParseException e) {
                             throw new RuntimeException(e);
                         }
+
+                        listener.onDownloadComplete(games);
                     }
                 }, new Response.ErrorListener() {
             @Override
