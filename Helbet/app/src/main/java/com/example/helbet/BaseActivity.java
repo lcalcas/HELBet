@@ -21,6 +21,8 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public abstract class BaseActivity extends AppCompatActivity{
     public final static Class<MainActivity> INDEX = MainActivity.class;
@@ -124,7 +126,7 @@ public abstract class BaseActivity extends AppCompatActivity{
                 System.out.println("NOT LOGGED");
                 db.fetch(USERS_PATHREF, auth.getUser().getUid(), User.class, new OnFetchCompleteListener<User>() {
                     @Override
-                    public <T extends DBModel> void onFetchComplete(ArrayList<T> fetchResult) {
+                    public void onFetchComplete(ArrayList<User> fetchResult) {
                         if (fetchResult.size() == 1) {
                             System.out.println("USER FETCHED FROM DB");
                             session.setCurrentUser((User) fetchResult.get(0));

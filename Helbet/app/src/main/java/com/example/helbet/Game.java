@@ -1,6 +1,5 @@
 package com.example.helbet;
 
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,75 +12,49 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
-import java.text.ParseException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Locale;
 import java.util.TimeZone;
 
-public class Game extends DBModel{
+public class Game extends DBModel implements Comparable<Game> {
     public String leagueId;
-    public String formattedDate;
-    public String formattedTime;
+    public long timestamp;
     public String homeClubId;
     public String awayClubId;
-//    public String homeClubLogo;
-//    public String awayClubLogo;
     public int result;
 
     public Game() {
     }
 
     public Game(Game other) {
-       this.leagueId = other.getLeagueId();
-       this.formattedDate = other.getFormattedDate();
-       this.formattedTime = other.getFormattedTime();
-       this.homeClubId = other.getHomeClubId();
-       this.awayClubId = other.getAwayClubId();
-//       this.homeClubId = other.getHomeClubLogo();
-//       this.awayClubLogo = other.getAwayClubLogo();
-       this.result = other.getResult();
+       this(
+               other.getLeagueId(),
+               other.getTimestamp(),
+               other.getHomeClubId(),
+               other.getAwayClubId(),
+               other.getResult()
+       );
     }
 
-    public Game(String leagueId, String formattedDate, String formattedTime, String homeClubId, String awayClubId) {
-        this(leagueId, formattedDate, formattedTime, homeClubId, awayClubId, Results.NONE);
+    public Game(String leagueId, long timestamp, String homeClubId, String awayClubId) {
+        this(leagueId, timestamp, homeClubId, awayClubId, Results.NONE);
     }
 
-    public Game(String leagueId, String formattedDate, String formattedTime, String homeClubId, String awayClubId, int homeResult, int awayResult) {
-        this(leagueId, formattedDate, formattedTime, homeClubId, awayClubId, calculateResult(homeResult, awayResult));
+    public Game(String leagueId, long timestamp, String homeClubId, String awayClubId, int homeResult, int awayResult) {
+        this(leagueId, timestamp, homeClubId, awayClubId, calculateResult(homeResult, awayResult));
     }
 
-    public Game(String leagueId, String formattedDate, String formattedTime, String homeClubId, String awayClubId, int result) {
+    public Game(String leagueId, long timestamp, String homeClubId, String awayClubId, int result) {
         this.leagueId = leagueId;
-        this.formattedDate = formattedDate;
-        this.formattedTime = formattedTime;
+        this.timestamp = timestamp;
         this.homeClubId = homeClubId;
         this.awayClubId = awayClubId;
-//        this.homeClubLogo = homeClubLogo;
-//        this.awayClubLogo = awayClubLogo;
         this.result = result;
     }
-
-//    public Game(String leagueId, String formattedDate, String formattedTime, String homeClubId, String awayClubId, String homeClubLogo, String awayClubLogo) {
-//        this(leagueId, formattedDate, formattedTime, homeClubId, awayClubId, homeClubLogo, awayClubLogo, Results.NONE);
-//    }
-//
-//    public Game(String leagueId, String formattedDate, String formattedTime, String homeClubId, String awayClubId, String homeCLubLogo, String awayClubLogo, int homeResult, int awayResult) {
-//        this(leagueId, formattedDate, formattedTime, homeClubId, awayClubId, homeCLubLogo, awayClubLogo, calculateResult(homeResult, awayResult));
-//    }
-//
-//    public Game(String leagueId, String formattedDate, String formattedTime, String homeClubId, String awayClubId, String homeClubLogo, String awayClubLogo, int result) {
-//        this.leagueId = leagueId;
-//        this.formattedDate = formattedDate;
-//        this.formattedTime = formattedTime;
-//        this.homeClubId = homeClubId;
-//        this.awayClubId = awayClubId;
-//        this.homeClubLogo = homeClubLogo;
-//        this.awayClubLogo = awayClubLogo;
-//        this.result = result;
-//    }
 
     public String getLeagueId() {
         return leagueId;
@@ -91,21 +64,14 @@ public class Game extends DBModel{
         this.leagueId = leagueId;
     }
 
-    public String getFormattedDate() {
-        return formattedDate;
+    public long getTimestamp() {
+        return timestamp;
     }
 
-    public void setFormattedDate(String formattedDate) {
-        this.formattedDate = formattedDate;
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 
-    public String getFormattedTime() {
-        return formattedTime;
-    }
-
-    public void setFormattedTime(String formattedTime) {
-        this.formattedTime = formattedTime;
-    }
 
     public String getHomeClubId() {
         return homeClubId;
@@ -137,34 +103,23 @@ public class Game extends DBModel{
         else return Results.AWAY;
     }
 
-    public HashMap<String, String> getClubIds() {
-        HashMap<String, String> result = new HashMap<>();
-        result.put("home", this.homeClubId);
-        result.put("away", this.awayClubId);
-        return result;
+    @Override
+    public String toString() {
+        return "Game{" +
+                "leagueId='" + leagueId + '\'' +
+                ", timestamp=" + timestamp +
+                ", homeClubId='" + homeClubId + '\'' +
+                ", awayClubId='" + awayClubId + '\'' +
+                ", result=" + result +
+                "} " + super.toString();
     }
 
-    public Calendar getDateTime() {
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat resultFormatter = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-
-        Date parsedDate = null;
-        try {
-            parsedDate = resultFormatter.parse(this.getFormattedDate() + " " + this.getFormattedTime());
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-
-
-        calendar.setTime(parsedDate);
-        return calendar;
+    @Override
+    public int compareTo(Game other) {
+        return Long.compare(this.timestamp, ((Game) other).getTimestamp());
     }
 
-    public long getTimeRemaining() {
-        return Calendar.getInstance().getTimeInMillis() - this.getDateTime().getTimeInMillis();
-    }
-
-//    public String getHomeClubLogo() {
+    //    public String getHomeClubLogo() {
 //        return homeClubLogo;
 //    }
 //
@@ -180,102 +135,101 @@ public class Game extends DBModel{
 //        this.awayClubLogo = awayClubLogo;
 //    }
 
+
+
+}
+
+class GameItemDataModel extends Game {
+    private Club home;
+    private Club away;
+    private Odd odds;
+
+    public GameItemDataModel(Game g, Club home, Club away, Odd odds) {
+        super(g);
+        this.home = home;
+        this.away = away;
+        this.odds = odds;
+    }
+
+    public Club getHome() {
+        return home;
+    }
+
+    public void setHome(Club home) {
+        this.home = home;
+    }
+
+    public Club getAway() {
+        return away;
+    }
+
+    public void setAway(Club away) {
+        this.away = away;
+    }
+
+    public Odd getOdds() {
+        return odds;
+    }
+
+    public void setOdds(Odd odds) {
+        this.odds = odds;
+    }
+
+    public String getFormattedTime(TimeZone timezone) {
+        DateFormat formatter = new SimpleDateFormat("HH:mm");
+        formatter.setTimeZone(timezone);
+        Date date = new Date(this.getTimestamp());
+        return formatter.format(date);
+    }
+
     @Override
     public String toString() {
-        return "Game{" +
-                "leagueId='" + leagueId + '\'' +
-                ", formattedDate='" + formattedDate + '\'' +
-                ", formattedTime='" + formattedTime + '\'' +
-                ", homeClubId='" + homeClubId + '\'' +
-                ", awayClubId='" + awayClubId + '\'' +
-//                ", homeClubLogo='" + homeClubLogo + '\'' +
-//                ", awayClubLogo='" + awayClubLogo + '\'' +
-                ", result=" + result +
+        return "GameItemDataModel{" +
+                "home=" + home +
+                ", away=" + away +
+                ", odds=" + odds +
                 "} " + super.toString();
     }
 }
 
-class GameItemDataModel extends Game {
-    private Club homeClub;
-    private Club awayClub;
-    private String formattedTimeRemaining;
-
-    GameItemDataModel(Game g) {
-        this(g, null, null, null);
-    }
-
-    GameItemDataModel(Game g, Club homeClub, Club awayClub, String timeRemaining) {
-        super(g);
-        this.formattedTimeRemaining = timeRemaining;
-        this.homeClub = homeClub;
-        this.awayClub = awayClub;
-    }
-
-    boolean valid() {
-        return !(this.homeClub == null || this.awayClub == null || this.formattedTimeRemaining == null);
-    }
-
-    public String getFormattedTimeRemaining() {
-        return formattedTimeRemaining;
-    }
-
-    public void setFormattedTimeRemaining(String formattedTimeRemaining) {
-        this.formattedTimeRemaining = formattedTimeRemaining;
-    }
-
-    public Club getHomeClub() {
-        return homeClub;
-    }
-
-    public void setHomeClub(Club homeClub) {
-        this.homeClub = homeClub;
-    }
-
-    public Club getAwayClub() {
-        return awayClub;
-    }
-
-    public void setAwayClub(Club awayClub) {
-        this.awayClub = awayClub;
-    }
-}
-
-class GameItemDataModelFactory {
-    private static GameItemDataModelFactory singleton;
-
-    private GameItemDataModelFactory() {
-
-    }
-
-    public synchronized static GameItemDataModelFactory getInstance() {
-        if (singleton == null) {
-            singleton = new GameItemDataModelFactory();
-        }
-
-        return singleton;
-    }
-
-    public <T extends Game> GameItemDataModel makeGameItemDataModel(T gameObject, HashMap<String, Club> homeNAwayClubs) {
-        Club home = homeNAwayClubs.get("home");
-        Club away = homeNAwayClubs.get("away");
-        Game g = (Game) gameObject;
-        GameItemDataModel result = new GameItemDataModel(g);
-        Calendar currentDateTime = Calendar.getInstance(TimeZone.getDefault());
-        long timeRemaining = (currentDateTime.getTimeInMillis() - g.getDateTime().getTimeInMillis()) / (1000 * 60 * 60);
-        result.setFormattedTimeRemaining((timeRemaining < 0)? String.valueOf(timeRemaining): "0");
-
-        result.setHomeClub(home);
-        result.setAwayClub(away);
-
-        return result;
-    }
-}
+//class GameItemDataModelFactory {
+//    private static GameItemDataModelFactory singleton;
+//
+//    private GameItemDataModelFactory() {
+//
+//    }
+//
+//    public synchronized static GameItemDataModelFactory getInstance() {
+//        if (singleton == null) {
+//            singleton = new GameItemDataModelFactory();
+//        }
+//
+//        return singleton;
+//    }
+//
+//    public <T extends Game> GameItemDataModel makeGameItemDataModel(T gameObject, HashMap<String, Club> homeNAwayClubs) {
+//        Club home = homeNAwayClubs.get("home");
+//        Club away = homeNAwayClubs.get("away");
+//        Game g = (Game) gameObject;
+//        GameItemDataModel result = new GameItemDataModel(g);
+//        Calendar currentDateTime = Calendar.getInstance(TimeZone.getDefault());
+//        long timeRemaining = (currentDateTime.getTimeInMillis() - g.getDateTime().getTimeInMillis()) / (1000 * 60 * 60);
+//        result.setFormattedTimeRemaining((timeRemaining < 0)? String.valueOf(timeRemaining): "0");
+//
+//        result.setHomeClub(home);
+//        result.setAwayClub(away);
+//
+//        return result;
+//    }
+//}
 
 
 class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewHolder> {
     ArrayList<GameItemDataModel> games;
-    public GameItemAdapter(ArrayList<GameItemDataModel> games) {
+    TimeZone timezone;
+    public GameItemAdapter(ArrayList<GameItemDataModel> games, TimeZone timezone) {
         this.games = games;
+        this.timezone = timezone;
     }
 
     @NonNull
@@ -289,8 +243,10 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
     public void onBindViewHolder(@NonNull GameItemViewHolder holder, int position) {
         GameItemDataModel g = games.get(position);
 
-        Club home = g.getHomeClub();
-        Club away = g.getAwayClub();
+        Club home = g.getHome();
+        Club away = g.getAway();
+        Odd odds = g.getOdds();
+        System.out.println("[GameItemAdapter - onBindViewHolder] g => " + g);
 
         Glide.with(holder.itemView.getContext())
                 .load(home.getLogoUrl())
@@ -302,21 +258,31 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
                 .error(R.drawable.error_image)
                 .into(holder.awayLogo);
 
-        Handler mHandler = new Handler();
+        holder.timeView.setText(g.getFormattedTime(timezone));
 
-        Runnable mUpdateTimeTask = new Runnable() {
-            public void run() {
-                holder.timeRemaining.setText(g.getFormattedTimeRemaining());
-                mHandler.postDelayed(this, 60000);
-            }
-        };
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(timezone);
+        calendar.setTime(new Date());
+        int dayNow = calendar.get(Calendar.DAY_OF_YEAR);
+        calendar.setTime(new Date(g.getTimestamp()));
+        int matchDay = calendar.get(Calendar.DAY_OF_YEAR);
+        int difference = matchDay - dayNow;
 
-        mHandler.post(mUpdateTimeTask);
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", new Locale("fr", "FR"));
+        holder.dayView.setText(
+                (difference < 1) ?
+                            "":
+                            (difference < 2) ?
+                                    "Demain":
+                                    dayFormat.format(g.getTimestamp())
+        );
 
-        if (g.getFormattedTimeRemaining() == "0") {
-            holder.homeVoteBtn.setVisibility(View.GONE);
-            holder.awayVoteBtn.setVisibility(View.GONE);
-        }
+        holder.homeLabel.setText(home.getName());
+        holder.awayLabel.setText(away.getName());
+
+        holder.homeVoteBtn.setText(String.valueOf(odds.getHomeOdd()));
+        holder.awayVoteBtn.setText(String.valueOf(odds.getAwayOdd()));
+        holder.drawVoteBtn.setText(String.valueOf(odds.getDrawOdd()));
     }
 
     @Override
@@ -328,17 +294,25 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
 
         private ImageView homeLogo;
         private ImageView awayLogo;
+        private TextView homeLabel;
+        private TextView awayLabel;
         private Button homeVoteBtn;
         private Button awayVoteBtn;
-        private TextView timeRemaining;
+        private Button drawVoteBtn;
+        private TextView dayView;
+        private TextView timeView;
 
         GameItemViewHolder(@NonNull View itemView) {
             super(itemView);
             homeLogo = itemView.findViewById(R.id.home_logo);
             awayLogo = itemView.findViewById(R.id.away_logo);
+            homeLabel = itemView.findViewById(R.id.home_club_name);
+            awayLabel = itemView.findViewById(R.id.away_club_name);
             homeVoteBtn = itemView.findViewById(R.id.home_vote_button);
             awayVoteBtn = itemView.findViewById(R.id.away_vote_button);
-            timeRemaining = itemView.findViewById(R.id.time_remaining);
+            drawVoteBtn = itemView.findViewById(R.id.draw_vote_button);
+            dayView = itemView.findViewById(R.id.day);
+            timeView = itemView.findViewById(R.id.time);
         }
     }
 }

@@ -39,17 +39,15 @@ public class ListingActivity extends BaseActivity {
     @Override
     protected void userLogged() {
         leaguesForAdapter = new ArrayList<>();
-        db.fetch(PathRefs.LEAGUES_PATHREF, League.class, new OnFetchCompleteListener<League>() {
-            public <T extends DBModel> void onFetchComplete(ArrayList<T> result) {
-                for (T o: result) {
-                    League l = (League) o;
+        db.fetch(PathRefs.LEAGUES_PATHREF, true, League.class, new OnFetchCompleteListener<League>() {
+            public void onFetchComplete(ArrayList<League> result) {
+                for (League l: result) {
 
                     db.fetch(PathRefs.CLUBS_PATHREF, "leagueId", l.getId(), Club.class, new OnFetchCompleteListener<Club>() {
                         @Override
-                        public <T extends DBModel> void onFetchComplete(ArrayList<T> fetchResult) {
+                        public void onFetchComplete(ArrayList<Club> fetchResult) {
                             ArrayList<ClubItemDataModel> clubsForAdapter = new ArrayList<>();
-                            for (T otherO: fetchResult) {
-                                Club c = (Club) otherO;
+                            for (Club c: fetchResult) {
                                 ClubItemDataModel clubDataModel = new ClubItemDataModel(c);
                                 clubDataModel.setId(c.getId());
                                 clubsForAdapter.add(clubDataModel);

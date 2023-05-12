@@ -3,6 +3,7 @@ package com.example.helbet;
 public class Session {
     private static Session singleton;
     private User currentUser;
+    private UpdateTimer lastUpdate;
 
     private Session() {}
 

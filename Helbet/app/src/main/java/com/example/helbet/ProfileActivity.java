@@ -55,11 +55,9 @@ public class ProfileActivity extends BaseActivity {
             finish();
         });
 
-        System.out.println(session.getCurrentUser().getFavoriteClubs());
         if (session.getCurrentUser().getFavoriteClubs() != null) {
             for (String clubId :
                     session.getCurrentUser().getFavoriteClubs()) {
-                System.out.println(clubId);
                 db.fetch(PathRefs.CLUBS_PATHREF, clubId, Club.class, new OnFetchCompleteListener() {
                     @Override
                     public void onFetchComplete(ArrayList fetchResult) {

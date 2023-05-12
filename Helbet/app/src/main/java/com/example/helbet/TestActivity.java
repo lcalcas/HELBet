@@ -49,10 +49,6 @@ public class TestActivity extends BaseActivity {
             startActivity(i);
         });
 
-        update.setOnClickListener(view -> {
-            data.dlAndStoreLeaguesAndClubs();
-        });
-
         logout.setOnClickListener(view -> {
             logout();
         });

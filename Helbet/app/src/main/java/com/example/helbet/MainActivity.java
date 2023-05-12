@@ -4,22 +4,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.TimeZone;
 
 public class MainActivity extends BaseActivity {
 
     RecyclerView recyclerView;
-    TextView tv;
     Button button;
-    Button button2;
     GameItemAdapter adapter;
     ArrayList<GameItemDataModel> gamesForAdapter;
     int gameListLength;
@@ -30,22 +27,13 @@ public class MainActivity extends BaseActivity {
 
         recyclerView = findViewById(R.id.games_ot_day_rv);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setHasFixedSize(true);
-
-        tv = findViewById(R.id.textView);
         button = findViewById(R.id.button);
-        button2 = findViewById(R.id.button2);
         gamesForAdapter = new ArrayList<>();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        button2.setText("download");
-        button2.setOnClickListener(view -> {
-
-        });
     }
 
     @Override
@@ -67,44 +55,59 @@ public class MainActivity extends BaseActivity {
     protected void userLogged() {
         // TODO AFFICHAGE PARIS + OPT PARIS
         System.out.println("APPLYING LOGGED PROTOCOL");
-        tv.setText("Bonjour, " + Session.getInstance().getCurrentUser().getEmail());
-        // Récupération des anciens et nouveaux matchs :
-        data.fetchGames(new OnGamesFetchedListener() {
+        checkUpdates();
+        displayGames(session.getCurrentUser());
+
+        button.setVisibility(View.INVISIBLE);
+    }
+
+    void checkUpdates() {
+        data.updateIfNecessary();
+    }
+
+    @Override
+    protected void userUnLogged() {
+        // TODO AFFICHAGE PARIS SANS OPT
+        System.out.println("APPLYING UNLOGGED PROTOCOL");
+        displayGames(null);
+
+        button.setText("S'authentifier");
+        button.setOnClickListener(view -> {
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+        });
+    }
+
+    private void displayGames(User user) {
+        data.fetchGamesToDisplay(new Date(), TimeZone.getDefault(), new OnGamesFetchedListener() {
             @Override
-            public void onOldGamesFetched(List<Game> gameList) {
-
-            }
-
-            @Override
-            public void onRecentGamesFetched(List<Game> gameList) {
-
-
+            public void onDateSpecifiedGamesFetched(List<Game> gameList, Date dateSpecified) {
                 gameListLength = gameList.size();
                 for (Game g: gameList) {
                     String homeId = g.getHomeClubId();
                     String awayId = g.getAwayClubId();
                     db.fetch(PathRefs.CLUBS_PATHREF, homeId, Club.class, new OnFetchCompleteListener<Club>() {
                         @Override
-                        public <T extends DBModel> void onFetchComplete(ArrayList<T> fetchResult) {
-                            Club home = (Club) fetchResult.get(0);
+                        public void onFetchComplete(ArrayList<Club> fetchResult) {
+                            Club home = fetchResult.get(0);
                             db.fetch(PathRefs.CLUBS_PATHREF, awayId, Club.class, new OnFetchCompleteListener<Club>() {
                                 @Override
-                                public <T extends DBModel> void onFetchComplete(ArrayList<T> fetchResult) {
-                                    Club away = (Club) fetchResult.get(0);
+                                public void onFetchComplete(ArrayList<Club> fetchResult) {
+                                    Club away = fetchResult.get(0);
+                                    db.fetch(PathRefs.ODDS_PATHREF, g.getId(), Odd.class, new OnFetchCompleteListener<Odd>() {
+                                        @Override
+                                        public void onFetchComplete(ArrayList<Odd> fetchResult) {
+                                            Odd odds = fetchResult.get(0);
+                                            System.out.println("[MainActivity - onDateSpecifiedGamesFetched] odds -> " + odds);
 
-                                    HashMap<String, Club> homeNAwayClubs = new HashMap<>();
-                                    homeNAwayClubs.put("home", home);
-                                    homeNAwayClubs.put("away", away);
-
-                                    GameItemDataModel gameItemDataModel = GameItemDataModelFactory.getInstance().makeGameItemDataModel(
-                                            g,
-                                            homeNAwayClubs
-                                    );
-                                    gameItemDataModel.setId(g.getId());
-                                    gamesForAdapter.add(gameItemDataModel);
-                                    if (checkGamesFetch()) {
-                                        setAdapter();
-                                    }
+                                            GameItemDataModel gameItemDataModel = new GameItemDataModel(g, home, away, odds);
+                                            gameItemDataModel.setId(g.getId());
+                                            gamesForAdapter.add(gameItemDataModel);
+                                            if (checkGamesFetch()) {
+                                                setAdapter(user);
+                                            }
+                                        }
+                                    });
                                 }
                             });
                         }
@@ -118,21 +121,9 @@ public class MainActivity extends BaseActivity {
         return gameListLength == gamesForAdapter.size();
     }
 
-    private void setAdapter() {
-        User user = session.getCurrentUser();
-        adapter = new GameItemAdapter(gamesForAdapter);
-        recyclerView.setAdapter(adapter);
-    }
 
-    @Override
-    protected void userUnLogged() {
-        // TODO AFFICHAGE PARIS SANS OPT
-        System.out.println("APPLYING UNLOGGED PROTOCOL");
-        tv.setText("Bonjour, invité !");
-        button.setText("S'authentifier");
-        button.setOnClickListener(view -> {
-            Intent i = new Intent(this, LoginActivity.class);
-            startActivity(i);
-        });
+    private void setAdapter(User user) {
+        adapter = new GameItemAdapter(gamesForAdapter, TimeZone.getDefault());
+        recyclerView.setAdapter(adapter);
     }
 }

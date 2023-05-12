@@ -93,7 +93,7 @@ public class LoginActivity extends BaseActivity {
                         String userId = authTask.getResult().getUser().getUid();
                         db.fetch(USERS_PATHREF, userId, User.class, new OnFetchCompleteListener<User>() {
                             @Override
-                            public <T extends DBModel> void onFetchComplete(ArrayList<T> fetchResult) {
+                            public void onFetchComplete(ArrayList<User> fetchResult) {
                                 progressBar.setVisibility(View.GONE);
                                 if (fetchResult.size() == 1) {
                                     User user = (User) fetchResult.get(0);
