@@ -77,13 +77,17 @@ public class DataManager  {
     }
 
     public void dlAndStoreGames(Date date) {
+        dlAndStoreGames(date, null);
+    }
+
+    public void dlAndStoreGames(Date date, OnDownloadCompleteListener<Game> listener) {
         apiManager.dlGames(date, new OnDownloadCompleteListener<Game>() {
             @Override
             public void onDownloadComplete(ArrayList<Game> downloadResult) {
                 for (Game g: downloadResult) {
                     if (LIST_LEAGUE_IDS.contains(g.getLeagueId())) {
                         dbManager.storeObject(g, PathRefs.GAMES_PATHREF,
-                                task -> System.out.println("[DBSTORE] '" + g.getLeagueId() + ", " + g.getHomeClubId() + " vs " + g.getAwayClubId() + "' - successfully downloaded and uploaded to db. ref=" + PathRefs.GAMES_PATHREF)
+                                task -> System.out.println("[DBSTORE] game{ " + g.getId() + " } : " + g.getLeagueId() + ", " + g.getHomeClubId() + " vs " + g.getAwayClubId() + "' - successfully downloaded and uploaded to db. ref=" + PathRefs.GAMES_PATHREF)
                         );
                         apiManager.dlOdd(g.getId(), new OnDownloadCompleteListener<Odd>() {
                             @Override
@@ -96,6 +100,10 @@ public class DataManager  {
                     } else {
                         System.out.println("[DBSTORE] - not stored " + g);
                     }
+                }
+
+                if (listener != null) {
+                    listener.onDownloadComplete(downloadResult);
                 }
             }
         });
@@ -173,6 +181,7 @@ public class DataManager  {
     }
 
     public void fetchGamesToDisplay(Date date, TimeZone timeZone, OnGamesFetchedListener listener) {
+        System.out.println("Fetching games for: " + date);
         Calendar calendar = Calendar.getInstance(timeZone);
         calendar.setTime(date);
         System.out.println(calendar);
@@ -201,7 +210,12 @@ public class DataManager  {
                     listener.onDateSpecifiedGamesFetched(result, date);
                 } else {
                     Date newDate = new Date(date.getTime() + (1000 * 60 * 60 * 24));
-                    fetchGamesToDisplay(newDate, timeZone, listener);
+                    dlAndStoreGames(newDate, new OnDownloadCompleteListener<Game>() {
+                        @Override
+                        public void onDownloadComplete(ArrayList<Game> downloadResult) {
+                            fetchGamesToDisplay(newDate, timeZone, listener);
+                        }
+                    });
                 }
             }
         });

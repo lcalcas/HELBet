@@ -19,25 +19,7 @@ public class ListingActivity extends BaseActivity {
         recyclerView = findViewById(R.id.leagues_recyclerview);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }
 
-    @Override
-    public int getContentLayoutId() {
-        return R.layout.activity_listing;
-    }
-
-    @Override
-    public String getCurrentTitle() {
-        return "Parcourir";
-    }
-
-    @Override
-    public int getBottomNavSelectItemId() {
-        return R.id.menu_search;
-    }
-
-    @Override
-    protected void userLogged() {
         leaguesForAdapter = new ArrayList<>();
         db.fetch(PathRefs.LEAGUES_PATHREF, true, League.class, new OnFetchCompleteListener<League>() {
             public void onFetchComplete(ArrayList<League> result) {
@@ -65,6 +47,26 @@ public class ListingActivity extends BaseActivity {
         });
     }
 
+    @Override
+    public int getContentLayoutId() {
+        return R.layout.activity_listing;
+    }
+
+    @Override
+    public String getCurrentTitle() {
+        return "Parcourir";
+    }
+
+    @Override
+    public int getBottomNavSelectItemId() {
+        return R.id.menu_search;
+    }
+
+    @Override
+    protected void userLogged() {
+
+    }
+
     private boolean checkLeaguesFetch() {
         return APIConfig.LEAGUE_IDS.length == leaguesForAdapter.size();
     }
@@ -77,6 +79,6 @@ public class ListingActivity extends BaseActivity {
 
     @Override
     protected void userUnLogged() {
-        goToMain();
+        //goToMain();
     }
 }

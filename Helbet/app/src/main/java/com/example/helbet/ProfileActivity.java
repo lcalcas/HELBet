@@ -52,7 +52,7 @@ public class ProfileActivity extends BaseActivity {
         authenticate.setOnClickListener(view -> {
             session.setCurrentUser(null);
             auth.logoutUser();
-            finish();
+            goToMain();
         });
 
         if (session.getCurrentUser().getFavoriteClubs() != null) {

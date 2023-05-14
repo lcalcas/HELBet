@@ -115,20 +115,23 @@ class ClubItemAdapter extends RecyclerView.Adapter<ClubItemAdapter.ClubItemViewH
                 .error(R.drawable.error_image)
                 .into(holder.clubLogoView);
 
-        holder.clubFavoriteView.setChecked(user.isClubFavorite(club.getId()));
-        //holder.clubFavoriteView.setChecked(user.isFavorite(club));
-        holder.clubFavoriteView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    user.addFavoriteClub(club.getId());
-                } else {
-                    user.removeFavoriteClub(club.getId());
-                }
+        if (user != null) {
+            holder.clubFavoriteView.setChecked(user.isClubFavorite(club.getId()));
+            holder.clubFavoriteView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if (b) {
+                        user.addFavoriteClub(club.getId());
+                    } else {
+                        user.removeFavoriteClub(club.getId());
+                    }
 
-                DBManager.getInstance().storeObject(user, "users");
-            }
-        });
+                    DBManager.getInstance().storeObject(user, "users");
+                }
+            });
+        } else {
+            holder.clubFavoriteView.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override

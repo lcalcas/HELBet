@@ -57,7 +57,6 @@ public class MainActivity extends BaseActivity {
         System.out.println("APPLYING LOGGED PROTOCOL");
         checkUpdates();
         displayGames(session.getCurrentUser());
-
         button.setVisibility(View.INVISIBLE);
     }
 
@@ -83,36 +82,36 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onDateSpecifiedGamesFetched(List<Game> gameList, Date dateSpecified) {
                 gameListLength = gameList.size();
-                for (Game g: gameList) {
-                    String homeId = g.getHomeClubId();
-                    String awayId = g.getAwayClubId();
-                    db.fetch(PathRefs.CLUBS_PATHREF, homeId, Club.class, new OnFetchCompleteListener<Club>() {
-                        @Override
-                        public void onFetchComplete(ArrayList<Club> fetchResult) {
-                            Club home = fetchResult.get(0);
-                            db.fetch(PathRefs.CLUBS_PATHREF, awayId, Club.class, new OnFetchCompleteListener<Club>() {
-                                @Override
-                                public void onFetchComplete(ArrayList<Club> fetchResult) {
-                                    Club away = fetchResult.get(0);
-                                    db.fetch(PathRefs.ODDS_PATHREF, g.getId(), Odd.class, new OnFetchCompleteListener<Odd>() {
-                                        @Override
-                                        public void onFetchComplete(ArrayList<Odd> fetchResult) {
-                                            Odd odds = fetchResult.get(0);
-                                            System.out.println("[MainActivity - onDateSpecifiedGamesFetched] odds -> " + odds);
+                    for (Game g: gameList) {
+                        String homeId = g.getHomeClubId();
+                        String awayId = g.getAwayClubId();
+                        db.fetch(PathRefs.CLUBS_PATHREF, homeId, Club.class, new OnFetchCompleteListener<Club>() {
+                            @Override
+                            public void onFetchComplete(ArrayList<Club> fetchResult) {
+                                Club home = fetchResult.get(0);
+                                db.fetch(PathRefs.CLUBS_PATHREF, awayId, Club.class, new OnFetchCompleteListener<Club>() {
+                                    @Override
+                                    public void onFetchComplete(ArrayList<Club> fetchResult) {
+                                        Club away = fetchResult.get(0);
+                                        db.fetch(PathRefs.ODDS_PATHREF, g.getId(), Odd.class, new OnFetchCompleteListener<Odd>() {
+                                            @Override
+                                            public void onFetchComplete(ArrayList<Odd> fetchResult) {
+                                                Odd odds = fetchResult.get(0);
+                                                System.out.println("[MainActivity - onDateSpecifiedGamesFetched] odds -> " + odds);
 
-                                            GameItemDataModel gameItemDataModel = new GameItemDataModel(g, home, away, odds);
-                                            gameItemDataModel.setId(g.getId());
-                                            gamesForAdapter.add(gameItemDataModel);
-                                            if (checkGamesFetch()) {
-                                                setAdapter(user);
+                                                GameItemDataModel gameItemDataModel = new GameItemDataModel(g, home, away, odds);
+                                                gameItemDataModel.setId(g.getId());
+                                                gamesForAdapter.add(gameItemDataModel);
+                                                if (checkGamesFetch()) {
+                                                    setAdapter(user);
+                                                }
                                             }
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    });
-                }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
             }
         });
     }
