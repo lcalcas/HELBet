@@ -95,6 +95,7 @@ public class APIManager {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    System.out.println( "RESU" + result);
                     listener.onDownloadComplete(result);
                 }, e -> e.printStackTrace()
         ) {
@@ -104,6 +105,8 @@ public class APIManager {
                 return params;
             }
         };
+
+        appendRequest(request);
     }
 
     public void dlLeagueClubs(String leagueId, int seasonYear, OnDownloadCompleteListener<Club> listener) {
@@ -217,44 +220,52 @@ public class APIManager {
                     public void onResponse(JSONObject response) {
                         ArrayList<Odd> result = new ArrayList<>();
                         try {
-                            JSONObject responseData = response.getJSONArray("response").getJSONObject(0);
-                            double homeOdd = 0;
-                            double awayOdd = 0;
-                            double drawOdd = 0;
-                            JSONArray bookmakers = responseData.getJSONArray("bookmakers");
-                            for (int i = 0; i < bookmakers.length(); i++) {
-                                JSONObject bookMakerData = bookmakers.getJSONObject(i);
-                                JSONArray bets = bookMakerData.getJSONArray("bets");
-                                for (int j = 0; j < bets.length(); j++) {
-                                    JSONObject betData = bets.getJSONObject(j);
-                                    String betId = betData.getString("id");
-                                    if (
-                                            homeOdd == 0
-                                            || awayOdd == 0
-                                            || drawOdd == 0
-                                    ) {
-                                        if (betId.equals("1")) {
-                                            JSONArray betValues = betData.getJSONArray("values");
-                                            for (int k = 0; k < betValues.length(); k++) {
-                                                JSONObject valueJSONObject = betValues.getJSONObject(k);
-                                                String value = valueJSONObject.getString("value");
-                                                double odd = valueJSONObject.getDouble("odd");
+                            JSONArray responseDataArray = response.getJSONArray("response");
+                            if (response.getJSONArray("response").length() > 0) {
+                                JSONObject responseData = responseDataArray.getJSONObject(0);
+                                double homeOdd = 0;
+                                double awayOdd = 0;
+                                double drawOdd = 0;
+                                JSONArray bookmakers = responseData.getJSONArray("bookmakers");
+                                for (int i = 0; i < bookmakers.length(); i++) {
+                                    JSONObject bookMakerData = bookmakers.getJSONObject(i);
+                                    JSONArray bets = bookMakerData.getJSONArray("bets");
+                                    for (int j = 0; j < bets.length(); j++) {
+                                        JSONObject betData = bets.getJSONObject(j);
+                                        String betId = betData.getString("id");
+                                        if (
+                                                homeOdd == 0
+                                                        || awayOdd == 0
+                                                        || drawOdd == 0
+                                        ) {
+                                            if (betId.equals("1")) {
+                                                JSONArray betValues = betData.getJSONArray("values");
+                                                for (int k = 0; k < betValues.length(); k++) {
+                                                    JSONObject valueJSONObject = betValues.getJSONObject(k);
+                                                    String value = valueJSONObject.getString("value");
+                                                    double odd = valueJSONObject.getDouble("odd");
 
-                                                if (homeOdd == 0 && value.equals("Home")) {
-                                                    homeOdd = odd;
-                                                } else if (awayOdd == 0 && value.equals("Away")) {
-                                                    awayOdd = odd;
-                                                } else if (drawOdd == 0 && value.equals("Draw")) {
-                                                    drawOdd = odd;
+                                                    if (homeOdd == 0 && value.equals("Home")) {
+                                                        homeOdd = odd;
+                                                    } else if (awayOdd == 0 && value.equals("Away")) {
+                                                        awayOdd = odd;
+                                                    } else if (drawOdd == 0 && value.equals("Draw")) {
+                                                        drawOdd = odd;
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
+
+                                Odd resultOdd = new Odd(homeOdd, awayOdd, drawOdd);
+                                resultOdd.setId(gameId);
+                                result.add(resultOdd);
+                            } else {
+                                Odd resultOdd = new Odd(1.5, 1.5, 1.5);
+                                resultOdd.setId(gameId);
+                                result.add(resultOdd);
                             }
-                            Odd resultOdd = new Odd(homeOdd, awayOdd, drawOdd);
-                            resultOdd.setId(gameId);
-                            result.add(resultOdd);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

@@ -37,6 +37,15 @@ public class DBManager {
         Task t = dbRealtime.getReference(key).setValue(o.toMap());
     }
 
+    public <T extends DBModel> void storeObject(T o, OnCompleteListener listener) {
+        String key = o.getId();
+        Task t = dbRealtime.getReference(key).setValue(o.toMap());
+
+        if (listener != null) {
+            t.addOnCompleteListener(listener);
+        }
+    }
+
     public <T extends DBModel> void storeObject(T o, String pathRef) {
         storeObject(o , pathRef, null) ;
     }
@@ -59,20 +68,22 @@ public class DBManager {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                System.out.println("[LOG] - fetchQuery' snapshot: " + snapshot);
                 ArrayList<T> result = new ArrayList<>();
-                if (multiple) {
-                    for (DataSnapshot snapshotChild: snapshot.getChildren()) {
-                        T resultItem = snapshotChild.getValue(_class);
-                        resultItem.setId(snapshotChild.getKey());
+                if (snapshot.exists()) {
+                    if (multiple) {
+                        for (DataSnapshot snapshotChild: snapshot.getChildren()) {
+                            T resultItem = snapshotChild.getValue(_class);
+                            resultItem.setId(snapshotChild.getKey());
+                            result.add(resultItem);
+                        }
+                    } else {
+                        System.out.println(_class);
+                        T resultItem = snapshot.getValue(_class);
+                        resultItem.setId(snapshot.getKey());
                         result.add(resultItem);
                     }
-                } else {
-                    T resultItem = snapshot.getValue(_class);
-                    resultItem.setId(snapshot.getKey());
-                    result.add(resultItem);
+                    listener.onFetchComplete(result);
                 }
-                listener.onFetchComplete(result);
             }
 
             @Override

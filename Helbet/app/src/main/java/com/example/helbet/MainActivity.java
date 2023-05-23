@@ -16,7 +16,6 @@ import java.util.TimeZone;
 public class MainActivity extends BaseActivity {
 
     RecyclerView recyclerView;
-    Button button;
     GameItemAdapter adapter;
     ArrayList<GameItemDataModel> gamesForAdapter;
     int gameListLength;
@@ -25,15 +24,19 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        System.out.println("MAINACTIVITY");
+
         recyclerView = findViewById(R.id.games_ot_day_rv);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        button = findViewById(R.id.button);
+        recyclerView.setHasFixedSize(true);
         gamesForAdapter = new ArrayList<>();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
+        checkUpdates();
     }
 
     @Override
@@ -55,32 +58,30 @@ public class MainActivity extends BaseActivity {
     protected void userLogged() {
         // TODO AFFICHAGE PARIS + OPT PARIS
         System.out.println("APPLYING LOGGED PROTOCOL");
-        checkUpdates();
-        displayGames(session.getCurrentUser());
-        button.setVisibility(View.INVISIBLE);
     }
 
     void checkUpdates() {
-        data.updateIfNecessary();
+        data.updateIfNecessary(new OnDownloadCompleteListener() {
+            @Override
+            public void onDownloadComplete(ArrayList downloadResult) {
+                System.out.println("Displaying");
+                displayGames(session.getCurrentUser());
+            }
+        });
     }
 
     @Override
     protected void userUnLogged() {
         // TODO AFFICHAGE PARIS SANS OPT
         System.out.println("APPLYING UNLOGGED PROTOCOL");
-        displayGames(null);
-
-        button.setText("S'authentifier");
-        button.setOnClickListener(view -> {
-            Intent i = new Intent(this, LoginActivity.class);
-            startActivity(i);
-        });
     }
 
     private void displayGames(User user) {
         data.fetchGamesToDisplay(new Date(), TimeZone.getDefault(), new OnGamesFetchedListener() {
             @Override
             public void onDateSpecifiedGamesFetched(List<Game> gameList, Date dateSpecified) {
+                System.out.println("Date[" + dateSpecified +"] games: " + gameList );
+                System.out.println(gameList.size());
                 gameListLength = gameList.size();
                     for (Game g: gameList) {
                         String homeId = g.getHomeClubId();
@@ -102,9 +103,11 @@ public class MainActivity extends BaseActivity {
                                                 GameItemDataModel gameItemDataModel = new GameItemDataModel(g, home, away, odds);
                                                 gameItemDataModel.setId(g.getId());
                                                 gamesForAdapter.add(gameItemDataModel);
-                                                if (checkGamesFetch()) {
-                                                    setAdapter(user);
-                                                }
+//                                                if (checkGamesFetch()) {
+//                                                    System.out.println("checkGamesFetched");
+//
+//                                                }
+                                                setAdapter(user);
                                             }
                                         });
                                     }
@@ -117,6 +120,8 @@ public class MainActivity extends BaseActivity {
     }
 
     private boolean checkGamesFetch() {
+        System.out.println(gameListLength);
+        System.out.println(gamesForAdapter.size());
         return gameListLength == gamesForAdapter.size();
     }
 

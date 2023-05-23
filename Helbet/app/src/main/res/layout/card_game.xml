@@ -43,7 +43,6 @@
             android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/home_logo"
-            app:layout_constraintEnd_toEndOf="@id/home_logo"
             app:layout_constraintStart_toStartOf="@id/home_logo"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -113,7 +112,6 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/away_logo"
             app:layout_constraintEnd_toEndOf="@id/away_logo"
-            app:layout_constraintStart_toStartOf="@id/away_logo"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
