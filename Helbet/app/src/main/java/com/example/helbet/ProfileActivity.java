@@ -47,6 +47,8 @@ public class ProfileActivity extends BaseActivity {
 
     @Override
     protected void userLogged() {
+        super.userLogged();
+
         welcome.setText("Bonjour, " + session.getCurrentUser().getEmail());
         authenticate.setText("Déconnexion");
         authenticate.setOnClickListener(view -> {
@@ -76,6 +78,8 @@ public class ProfileActivity extends BaseActivity {
 
     @Override
     protected void userUnLogged() {
+        super.userUnLogged();
+
         welcome.setText("Bonjour, invité !");
         authenticate.setText("Connexion");
         authenticate.setOnClickListener(view -> {

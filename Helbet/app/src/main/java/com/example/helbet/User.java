@@ -74,17 +74,18 @@ public class User extends DBModel{
 
     private String email;
     private ArrayList<String> favoriteClubs;
-
+    private int balance;
     public User() {
     }
 
     public User(String email) {
-        this(email, new ArrayList<String>());
+        this(email, new ArrayList<String>(), 500);
     }
 
-    public User(String email, ArrayList<String> favoriteClubs) {
+    public User(String email, ArrayList<String> favoriteClubs, int balance) {
         this.email = email;
         this.favoriteClubs = favoriteClubs;
+        this.balance = balance;
     }
 
     public String getEmail() {
@@ -103,14 +104,19 @@ public class User extends DBModel{
         this.favoriteClubs = favoriteClubs;
     }
 
+    public int getBalance() {
+        return balance;
+    }
+
+    public String getStringBalance() {
+        return String.valueOf(balance);
+    }
+
+    public void setBalance(int balance) {
+        this.balance = balance;
+    }
+
     public void addFavoriteClub(String clubId) {
-//        if (favoriteClubs != null) {
-//            favoriteClubs.add(c.getId());
-//        } else {
-//            setFavoriteClubs(new ArrayList<String>() {{
-//                add(c.getId());
-//            }});
-//        }
         if (favoriteClubs == null) {
             setFavoriteClubs(new ArrayList<>());
         }

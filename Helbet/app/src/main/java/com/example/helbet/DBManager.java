@@ -77,7 +77,6 @@ public class DBManager {
                             result.add(resultItem);
                         }
                     } else {
-                        System.out.println(_class);
                         T resultItem = snapshot.getValue(_class);
                         resultItem.setId(snapshot.getKey());
                         result.add(resultItem);
@@ -107,8 +106,6 @@ public class DBManager {
 
     // FETCH - FILTER BOUNCED
     public <T extends DBModel> void fetch(String refPath, String timeKey, long timeMin, long timeMax, Class<T> _class, OnFetchCompleteListener listener) {
-        System.out.println(timeMin);
-        System.out.println(timeMax);
         Query q = dbRealtime.getReference(refPath).orderByChild(timeKey).startAt(timeMin).endAt(timeMax);
         fetchQuery(q, _class, true, listener);
     }

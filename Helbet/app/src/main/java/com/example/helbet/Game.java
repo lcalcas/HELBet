@@ -246,7 +246,6 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
         Club home = g.getHome();
         Club away = g.getAway();
         Odd odds = g.getOdds();
-        System.out.println("[GameItemAdapter - onBindViewHolder] g => " + g);
 
         Glide.with(holder.itemView.getContext())
                 .load(home.getLogoUrl())

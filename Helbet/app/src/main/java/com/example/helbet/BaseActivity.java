@@ -6,6 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,7 +38,11 @@ public abstract class BaseActivity extends AppCompatActivity{
 
     ImageView backArrow;
     TextView fragTitle;
+    TextView balance;
+    ImageView balanceIcon;
     BottomNavigationView bottomNav;
+
+    MutableLiveData<User> userLiveData;
 
     @Override
     public void setContentView(int layoutResID) {
@@ -61,7 +68,11 @@ public abstract class BaseActivity extends AppCompatActivity{
 
         backArrow = findViewById(R.id.fb_back);
         fragTitle = findViewById(R.id.fb_title);
+        balance = findViewById(R.id.fb_balance_amount);
+        balanceIcon = findViewById(R.id.fb_balance_image);
         bottomNav = findViewById(R.id.bottom_nav);
+
+        userLiveData = new MutableLiveData<>();
     }
 
     public abstract int getContentLayoutId();
@@ -113,22 +124,26 @@ public abstract class BaseActivity extends AppCompatActivity{
 
         setToolBar();
         checkUser();
+
+        userLiveData.observe(this, new Observer<User>() {
+            @Override
+            public void onChanged(User user) {
+                // Update the TextView with the new user data
+                balance.setText(user.getStringBalance());
+            }
+        });
     }
 
     private void checkUser() {
         if (auth.isAuthenticated()) { // Firebase authentification ok ?
-            System.out.println("AUTHENTICATED");
             User user = session.getCurrentUser();
             if (user != null && user.getId().equals(auth.getUser().getUid())) { // Realtime Database User ok ?
-                System.out.println("LOGGED");
                 userLogged();
             } else {
-                System.out.println("NOT LOGGED");
                 db.fetch(USERS_PATHREF, auth.getUser().getUid(), User.class, new OnFetchCompleteListener<User>() {
                     @Override
                     public void onFetchComplete(ArrayList<User> fetchResult) {
                         if (fetchResult.size() == 1) {
-                            System.out.println("USER FETCHED FROM DB");
                             session.setCurrentUser((User) fetchResult.get(0));
                             goToMain();
                         } else {
@@ -139,7 +154,6 @@ public abstract class BaseActivity extends AppCompatActivity{
                 });
             }
         } else {
-            System.out.println("NOT AUTHENTICATED");
             userUnLogged();
         }
     }
@@ -150,6 +164,23 @@ public abstract class BaseActivity extends AppCompatActivity{
         finish();
     }
 
-    protected abstract void userLogged();
-    protected abstract void userUnLogged();
+    protected void userLogged() {
+        userLiveData.setValue(session.getCurrentUser());
+    }
+    protected void userUnLogged() {
+        setBalanceDisplay(View.INVISIBLE);
+    }
+
+    public void triggerBalanceDisplay() {
+        if (balance.isShown()) {
+            setBalanceDisplay(View.INVISIBLE);
+        } else {
+            setBalanceDisplay(View.VISIBLE);
+        }
+    }
+
+    public void setBalanceDisplay(int visibility) {
+        balance.setVisibility(visibility);
+        balanceIcon.setVisibility(visibility);
+    }
 }

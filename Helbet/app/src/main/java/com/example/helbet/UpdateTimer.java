@@ -1,5 +1,8 @@
 package com.example.helbet;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
@@ -29,6 +32,20 @@ public class UpdateTimer extends DBModel {
         }
 
         return false;
+    }
+
+    public boolean isYesterday() {
+        // Obtenir la date actuelle
+        Calendar now = Calendar.getInstance();
+
+        // Obtenir la date du timestamp
+        Calendar lastUpdate = Calendar.getInstance();
+        lastUpdate.setTimeInMillis(time);
+
+        // Comparaison des années, mois et jours
+        return now.get(Calendar.YEAR) > lastUpdate.get(Calendar.YEAR)
+                || now.get(Calendar.MONTH) > lastUpdate.get(Calendar.MONTH)
+                || now.get(Calendar.DAY_OF_MONTH) - lastUpdate.get(Calendar.DAY_OF_MONTH) >= 1;
     }
 
     public long getTime() {

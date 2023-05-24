@@ -56,11 +56,15 @@ public class RegisterActivity extends BaseActivity {
 
     @Override
     protected void userLogged() {
+        super.userLogged();
+
         goToMain();
     }
 
     @Override
     protected void userUnLogged() {
+        super.userUnLogged();
+
         progressBar.setVisibility(View.INVISIBLE);
         submit.setText("Enregistrement");
         submit.setEnabled(false);

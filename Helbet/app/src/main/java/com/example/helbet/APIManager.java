@@ -95,7 +95,6 @@ public class APIManager {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    System.out.println( "RESU" + result);
                     listener.onDownloadComplete(result);
                 }, e -> e.printStackTrace()
         ) {

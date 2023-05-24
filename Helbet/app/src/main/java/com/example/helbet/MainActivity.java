@@ -24,8 +24,6 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        System.out.println("MAINACTIVITY");
-
         recyclerView = findViewById(R.id.games_ot_day_rv);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
@@ -57,14 +55,13 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void userLogged() {
         // TODO AFFICHAGE PARIS + OPT PARIS
-        System.out.println("APPLYING LOGGED PROTOCOL");
+        super.userLogged();
     }
 
     void checkUpdates() {
         data.updateIfNecessary(new OnDownloadCompleteListener() {
             @Override
             public void onDownloadComplete(ArrayList downloadResult) {
-                System.out.println("Displaying");
                 displayGames(session.getCurrentUser());
             }
         });
@@ -73,15 +70,13 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void userUnLogged() {
         // TODO AFFICHAGE PARIS SANS OPT
-        System.out.println("APPLYING UNLOGGED PROTOCOL");
+        super.userUnLogged();
     }
 
     private void displayGames(User user) {
         data.fetchGamesToDisplay(new Date(), TimeZone.getDefault(), new OnGamesFetchedListener() {
             @Override
             public void onDateSpecifiedGamesFetched(List<Game> gameList, Date dateSpecified) {
-                System.out.println("Date[" + dateSpecified +"] games: " + gameList );
-                System.out.println(gameList.size());
                 gameListLength = gameList.size();
                     for (Game g: gameList) {
                         String homeId = g.getHomeClubId();
@@ -98,15 +93,10 @@ public class MainActivity extends BaseActivity {
                                             @Override
                                             public void onFetchComplete(ArrayList<Odd> fetchResult) {
                                                 Odd odds = fetchResult.get(0);
-                                                System.out.println("[MainActivity - onDateSpecifiedGamesFetched] odds -> " + odds);
 
                                                 GameItemDataModel gameItemDataModel = new GameItemDataModel(g, home, away, odds);
                                                 gameItemDataModel.setId(g.getId());
                                                 gamesForAdapter.add(gameItemDataModel);
-//                                                if (checkGamesFetch()) {
-//                                                    System.out.println("checkGamesFetched");
-//
-//                                                }
                                                 setAdapter(user);
                                             }
                                         });
@@ -118,13 +108,6 @@ public class MainActivity extends BaseActivity {
             }
         });
     }
-
-    private boolean checkGamesFetch() {
-        System.out.println(gameListLength);
-        System.out.println(gamesForAdapter.size());
-        return gameListLength == gamesForAdapter.size();
-    }
-
 
     private void setAdapter(User user) {
         adapter = new GameItemAdapter(gamesForAdapter, TimeZone.getDefault());

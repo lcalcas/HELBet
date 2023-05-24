@@ -44,6 +44,8 @@ public class TestActivity extends BaseActivity {
 
     @Override
     protected void userLogged() {
+        super.userLogged();
+
         app.setOnClickListener(view -> {
             Intent i = new Intent(this, ListingActivity.class);
             startActivity(i);
@@ -63,6 +65,8 @@ public class TestActivity extends BaseActivity {
 
     @Override
     protected void userUnLogged() {
+        super.userUnLogged();
+
         goToMain();
     }
 }

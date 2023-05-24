@@ -23,10 +23,26 @@
 
         <TextView
             android:id="@+id/fb_title"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:text="@string/missing_ressource" />
+
+        <ImageView
+            android:id="@+id/fb_balance_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_balance_24"
+            android:layout_gravity="end"
+            android:layout_margin="20dp" />
+
+        <TextView
+            android:id="@+id/fb_balance_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00000"
+            android:textColor="@color/white"
+            android:layout_gravity="end"/>
     </Toolbar>
 </androidx.constraintlayout.widget.ConstraintLayout>

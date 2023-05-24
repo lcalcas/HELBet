@@ -37,11 +37,9 @@ public class DataManager  {
     }
 
     public void dlAndStoreLeagues(OnDownloadCompleteListener listener) {
-        System.out.println("Called");
         apiManager.dlLeagues(LIST_LEAGUE_IDS, new OnDownloadCompleteListener<League>() {
             @Override
             public void onDownloadComplete(ArrayList<League> downloadResult) {
-                System.out.println("[dm - 43] " + downloadResult);
                 for (League l: downloadResult) {
                     if (LIST_LEAGUE_IDS.contains(l.getId())) {
                         dbManager.storeObject(l, PathRefs.LEAGUES_PATHREF);
@@ -87,14 +85,9 @@ public class DataManager  {
         apiManager.dlGames(date, new OnDownloadCompleteListener<Game>() {
             @Override
             public void onDownloadComplete(ArrayList<Game> downloadResult) {
-                System.out.println("date: " + date);
-                System.out.println("Games: " + downloadResult);
                 for (Game g: downloadResult) {
-                    System.out.println("****Game: " + g);
                     if (LIST_LEAGUE_IDS.contains(g.getLeagueId())) {
-                        dbManager.storeObject(g, PathRefs.GAMES_PATHREF,
-                                task -> System.out.println("[DBSTORE] game{ " + g.getId() + " } : " + g.getLeagueId() + ", " + g.getHomeClubId() + " vs " + g.getAwayClubId() + "' - successfully downloaded and uploaded to db. ref=" + PathRefs.GAMES_PATHREF)
-                        );
+                        dbManager.storeObject(g, PathRefs.GAMES_PATHREF);
                         apiManager.dlOdd(g.getId(), new OnDownloadCompleteListener<Odd>() {
                             @Override
                             public void onDownloadComplete(ArrayList<Odd> downloadResult) {
@@ -108,7 +101,7 @@ public class DataManager  {
                             }
                         });
                     } else {
-                        System.out.println("[DBSTORE] - not stored " + g);
+                        // smt
                     }
                 }
 
@@ -168,9 +161,7 @@ public class DataManager  {
             @Override
             public void onFetchComplete(ArrayList<UpdateTimer> fetchResult) {
                 UpdateTimer lastUpdate = fetchResult.get(0);
-                System.out.println(lastUpdate);
-                if (lastUpdate.hasTimeGapPassed(48, 0)) {
-                    System.out.println("UPDATE LEAGUES, CLUBS AND GAMES");
+                if (lastUpdate.isYesterday()) {
                     dlAndStoreLeagues(new OnDownloadCompleteListener() {
                         @Override
                         public void onDownloadComplete(ArrayList downloadResult) {
@@ -184,16 +175,30 @@ public class DataManager  {
                         }
                     });
                 }
-                // TODO REM true
-                else if (lastUpdate.hasTimeGapPassed(12, 0)) {
-                    System.out.println("UPDATE GOTD");
-                    dlAndStoreGames(new Date(), new OnDownloadCompleteListener<Game>() {
-                        @Override
-                        public void onDownloadComplete(ArrayList<Game> downloadResult) {
-                            updateTimer(listener);
-                        }
-                    });
-                }
+//                System.out.println(lastUpdate.isYesterday());
+//                if (lastUpdate.hasTimeGapPassed(48, 0)) {
+//                    dlAndStoreLeagues(new OnDownloadCompleteListener() {
+//                        @Override
+//                        public void onDownloadComplete(ArrayList downloadResult) {
+//                            dlAndStoreClubs();
+//                            dlAndStoreGames(new Date(), new OnDownloadCompleteListener<Game>() {
+//                                @Override
+//                                public void onDownloadComplete(ArrayList<Game> downloadResult) {
+//                                    updateTimer(listener);
+//                                }
+//                            });
+//                        }
+//                    });
+//                }
+//                // TODO REM true
+//                else if (lastUpdate.hasTimeGapPassed(12, 0)) {
+//                    dlAndStoreGames(new Date(), new OnDownloadCompleteListener<Game>() {
+//                        @Override
+//                        public void onDownloadComplete(ArrayList<Game> downloadResult) {
+//                            updateTimer(listener);
+//                        }
+//                    });
+//                }
                 else {
                     listener.onDownloadComplete(new ArrayList());
                 }
@@ -213,10 +218,8 @@ public class DataManager  {
     }
 
     public void fetchGamesToDisplay(Date date, TimeZone timeZone, OnGamesFetchedListener listener) {
-        System.out.println("Fetching games for: " + date);
         Calendar calendar = Calendar.getInstance(timeZone);
         calendar.setTime(date);
-        System.out.println(calendar);
 
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
@@ -232,7 +235,6 @@ public class DataManager  {
         dbManager.fetch(PathRefs.GAMES_PATHREF, "timestamp", timeMin, timeMax, Game.class, new OnFetchCompleteListener<Game>() {
             @Override
             public void onFetchComplete(ArrayList<Game> fetchResult) {
-                System.out.println("DataManager: " + fetchResult);
                 if (!fetchResult.isEmpty()) {
                     ArrayList<Game> result = new ArrayList<>();
                     for (Game g: fetchResult) {

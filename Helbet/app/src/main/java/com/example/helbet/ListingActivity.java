@@ -64,7 +64,7 @@ public class ListingActivity extends BaseActivity {
 
     @Override
     protected void userLogged() {
-
+        super.userLogged();
     }
 
     private boolean checkLeaguesFetch() {
@@ -79,6 +79,6 @@ public class ListingActivity extends BaseActivity {
 
     @Override
     protected void userUnLogged() {
-        //goToMain();
+        super.userUnLogged();
     }
 }
