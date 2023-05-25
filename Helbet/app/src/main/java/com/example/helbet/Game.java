@@ -1,5 +1,13 @@
 package com.example.helbet;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -12,6 +20,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -23,6 +34,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Game extends DBModel implements Comparable<Game> {
@@ -36,13 +48,13 @@ public class Game extends DBModel implements Comparable<Game> {
     }
 
     public Game(Game other) {
-       this(
-               other.getLeagueId(),
-               other.getTimestamp(),
-               other.getHomeClubId(),
-               other.getAwayClubId(),
-               other.getResult()
-       );
+        this(
+                other.getLeagueId(),
+                other.getTimestamp(),
+                other.getHomeClubId(),
+                other.getAwayClubId(),
+                other.getResult()
+        );
     }
 
     public Game(String leagueId, long timestamp, String homeClubId, String awayClubId) {
@@ -141,7 +153,6 @@ public class Game extends DBModel implements Comparable<Game> {
 //    }
 
 
-
 }
 
 class GameItemDataModel extends Game {
@@ -230,10 +241,13 @@ class GameItemDataModel extends Game {
 
 
 class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewHolder> {
+    Context context;
     ArrayList<GameItemDataModel> games;
     TimeZone timezone;
     User user;
-    public GameItemAdapter(ArrayList<GameItemDataModel> games, TimeZone timezone, User user) {
+
+    public GameItemAdapter(Context context, ArrayList<GameItemDataModel> games, TimeZone timezone, User user) {
+        this.context = context;
         this.games = games;
         this.timezone = timezone;
         this.user = user;
@@ -281,10 +295,10 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", new Locale("fr", "FR"));
         holder.dayView.setText(
                 (difference < 1) ?
-                            "":
-                            (difference < 2) ?
-                                    "Demain":
-                                    dayFormat.format(g.getTimestamp())
+                        "" :
+                        (difference < 2) ?
+                                "Demain" :
+                                dayFormat.format(g.getTimestamp())
         );
 
         holder.homeLabel.setText(home.getName());
@@ -297,10 +311,38 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
         View.OnClickListener betConfirmListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bet newBet = new Bet(betResult.get(), Integer.parseInt(holder.betAmount.getText().toString()));
+                int betAmount = Integer.parseInt(holder.betAmount.getText().toString());
+                Bet newBet = new Bet(betResult.get(), betAmount);
                 newBet.setId(g.getId());
-                System.out.println(newBet);
+                user.debit(betAmount);
                 user.addBet(newBet);
+
+                Intent intent = new Intent(context, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "helbet")
+                        .setSmallIcon(R.drawable.baseline_h_mobiledata_24)
+                        .setContentTitle("Test")
+                        .setContentText("textContent")
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .setContentIntent(pendingIntent);
+
+                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+
+                if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                notificationManager.notify(123, builder.build());
+                AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                am.set(AlarmManager.RTC, new Date().getTime() + 10000, pendingIntent);
                 DBManager.getInstance().storeObject(user, "users");
             }
         };
@@ -325,8 +367,6 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
         holder.betCancel.setOnClickListener(v -> {
             holder.betLayout.setVisibility(View.GONE);
         });
-
-
 
         holder.betAmount.addTextChangedListener(new TextWatcher() {
             @Override
@@ -368,6 +408,12 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
     public void show(GameItemViewHolder holder) {
         holder.betLayout.setVisibility(View.VISIBLE);
     }
+
+
+    public void setAlarm(long gameTimestamp) {
+
+    }
+
 
     public class GameItemViewHolder extends RecyclerView.ViewHolder {
 

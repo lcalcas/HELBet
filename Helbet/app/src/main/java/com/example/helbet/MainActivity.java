@@ -1,6 +1,12 @@
 package com.example.helbet;
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -97,7 +103,7 @@ public class MainActivity extends BaseActivity {
                                                 GameItemDataModel gameItemDataModel = new GameItemDataModel(g, home, away, odds);
                                                 gameItemDataModel.setId(g.getId());
                                                 gamesForAdapter.add(gameItemDataModel);
-                                                setAdapter(user);
+                                                setAdapter();
                                             }
                                         });
                                     }
@@ -109,8 +115,8 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    private void setAdapter(User user) {
-        adapter = new GameItemAdapter(gamesForAdapter, TimeZone.getDefault(), session.getCurrentUser());
+    private void setAdapter() {
+        adapter = new GameItemAdapter(this, gamesForAdapter, TimeZone.getDefault(), session.getCurrentUser());
         recyclerView.setAdapter(adapter);
     }
 }

@@ -6,11 +6,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +49,9 @@ public abstract class BaseActivity extends AppCompatActivity{
 
     MutableLiveData<User> userLiveData;
 
+    NotificationManagerCompat notificationManager;
+
+
     @Override
     public void setContentView(int layoutResID) {
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) getLayoutInflater().inflate(R.layout.activity_base, null);
@@ -73,6 +81,10 @@ public abstract class BaseActivity extends AppCompatActivity{
         bottomNav = findViewById(R.id.bottom_nav);
 
         userLiveData = new MutableLiveData<>();
+
+        notificationManager = NotificationManagerCompat.from(this);
+
+        createNotificationChannel();
     }
 
     public abstract int getContentLayoutId();
@@ -182,5 +194,21 @@ public abstract class BaseActivity extends AppCompatActivity{
     public void setBalanceDisplay(int visibility) {
         balance.setVisibility(visibility);
         balanceIcon.setVisibility(visibility);
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Paris";
+            String description = "Helbet Paris";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("helbet", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }

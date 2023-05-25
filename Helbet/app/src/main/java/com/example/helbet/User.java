@@ -151,6 +151,10 @@ public class User extends DBModel{
         bets.add(bet);
     }
 
+    public void debit(int amount) {
+        this.balance -= amount;
+    }
+
     @Override
     public String toString() {
         return "User{" +

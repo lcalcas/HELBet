@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.helbet"
-        minSdk 24
+        minSdk 26
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -50,8 +50,7 @@ dependencies {
     implementation "androidx.navigation:navigation-ui:2.5.3"
 
     // Kotlin
-    implementation "androidx.navigation:navigation-fragment-ktx:2.5.3"
-    implementation "androidx.navigation:navigation-ui-ktx:2.5.3"
+
 
     // Feature module Support
     implementation "androidx.navigation:navigation-dynamic-features-fragment:2.5.3"

@@ -48,7 +48,6 @@ public class DBManager {
     }
 
     public <T extends DBModel> void storeObject(T o, String pathRef) {
-        System.out.println(o);
         storeObject(o , pathRef, null);
     }
 

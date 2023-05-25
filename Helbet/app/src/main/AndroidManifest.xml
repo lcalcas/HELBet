@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
     <!-- FOR API & DB REQUESTS -->
     <uses-permission android:name="android.permission.INTERNET" /> <!-- FOR JOB SCHEDULER -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
 
     <application
         android:allowBackup="true"
@@ -14,6 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HelBet"
         tools:targetApi="31">
+
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />
@@ -39,5 +42,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>
