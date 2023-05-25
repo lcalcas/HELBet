@@ -75,6 +75,7 @@ public class User extends DBModel{
     private String email;
     private ArrayList<String> favoriteClubs;
     private int balance;
+    private ArrayList<Bet> bets;
     public User() {
     }
 
@@ -108,12 +109,16 @@ public class User extends DBModel{
         return balance;
     }
 
-    public String getStringBalance() {
-        return String.valueOf(balance);
-    }
-
     public void setBalance(int balance) {
         this.balance = balance;
+    }
+
+    public ArrayList<Bet> getBets() {
+        return bets;
+    }
+
+    public void setBets(ArrayList<Bet> bets) {
+        this.bets = bets;
     }
 
     public void addFavoriteClub(String clubId) {
@@ -134,11 +139,25 @@ public class User extends DBModel{
         return favoriteClubs != null && favoriteClubs.contains(clubId);
     }
 
+    public String getStringBalance() {
+        return String.valueOf(balance);
+    }
+
+    public void addBet(Bet bet) {
+        if (bets == null) {
+            setBets(new ArrayList<>());
+        }
+
+        bets.add(bet);
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "email='" + email + '\'' +
                 ", favoriteClubs=" + favoriteClubs +
+                ", balance=" + balance +
+                ", bets=" + bets +
                 "} " + super.toString();
     }
 }

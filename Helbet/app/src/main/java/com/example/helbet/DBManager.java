@@ -6,6 +6,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
@@ -47,7 +48,8 @@ public class DBManager {
     }
 
     public <T extends DBModel> void storeObject(T o, String pathRef) {
-        storeObject(o , pathRef, null) ;
+        System.out.println(o);
+        storeObject(o , pathRef, null);
     }
 
     public <T extends DBModel> void storeObject(T o, String pathRef, OnCompleteListener listener) {
@@ -58,6 +60,18 @@ public class DBManager {
             t.addOnCompleteListener(listener);
         }
     }
+
+//    public <T extends DBModel> void storeObject(T o, ArrayList<String> childNodes) {
+//        String key = o.getId();
+//
+//        String pathRef = childNodes.get(0);
+//
+//        DatabaseReference ref = dbRealtime.getReference(pathRef);
+//        for (int i = 1; i < childNodes.size(); i++) {
+//            ref = ref.child(childNodes.get(i));
+//        }
+//        ref.setValue(o.toMap());
+//    }
 
     public void deleteObject(String key, String pathRef) {
         dbRealtime.getReference(pathRef).child(key).setValue(null);
@@ -151,7 +165,9 @@ public class DBManager {
 //        });
 //    }
 
+    public void storeUserBet(String userId, Bet bet) {
 
+    }
 }
 
 class PathRefs {

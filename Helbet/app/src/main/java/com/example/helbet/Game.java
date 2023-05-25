@@ -1,10 +1,14 @@
 package com.example.helbet;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,6 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Game extends DBModel implements Comparable<Game> {
     public String leagueId;
@@ -227,9 +232,11 @@ class GameItemDataModel extends Game {
 class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewHolder> {
     ArrayList<GameItemDataModel> games;
     TimeZone timezone;
-    public GameItemAdapter(ArrayList<GameItemDataModel> games, TimeZone timezone) {
+    User user;
+    public GameItemAdapter(ArrayList<GameItemDataModel> games, TimeZone timezone, User user) {
         this.games = games;
         this.timezone = timezone;
+        this.user = user;
     }
 
     @NonNull
@@ -242,6 +249,10 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
     @Override
     public void onBindViewHolder(@NonNull GameItemViewHolder holder, int position) {
         GameItemDataModel g = games.get(position);
+
+        AtomicInteger betResult = new AtomicInteger(Results.NONE);
+
+        holder.betConfirm.setEnabled(false);
 
         Club home = g.getHome();
         Club away = g.getAway();
@@ -282,11 +293,80 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
         holder.homeVoteBtn.setText(String.valueOf(odds.getHomeOdd()));
         holder.awayVoteBtn.setText(String.valueOf(odds.getAwayOdd()));
         holder.drawVoteBtn.setText(String.valueOf(odds.getDrawOdd()));
+
+        View.OnClickListener betConfirmListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bet newBet = new Bet(betResult.get(), Integer.parseInt(holder.betAmount.getText().toString()));
+                newBet.setId(g.getId());
+                System.out.println(newBet);
+                user.addBet(newBet);
+                DBManager.getInstance().storeObject(user, "users");
+            }
+        };
+
+        holder.betConfirm.setOnClickListener(betConfirmListener);
+
+        holder.homeVoteBtn.setOnClickListener(v -> {
+            show(holder);
+            betResult.set(Results.HOME);
+        });
+
+        holder.drawVoteBtn.setOnClickListener(v -> {
+            show(holder);
+            betResult.set(Results.DRAW);
+        });
+
+        holder.awayVoteBtn.setOnClickListener(v -> {
+            show(holder);
+            betResult.set(Results.AWAY);
+        });
+
+        holder.betCancel.setOnClickListener(v -> {
+            holder.betLayout.setVisibility(View.GONE);
+        });
+
+
+
+        holder.betAmount.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int i1, int i2) {
+                String betInput = charSequence.toString();
+                if (!betInput.isEmpty() && betInput.matches("\\d+")) {
+                    int betAmount = Integer.parseInt(betInput);
+                    if (betAmount > 0) {
+                        holder.betConfirm.setEnabled(true);
+                    }
+                    if (betAmount > user.getBalance()) {
+                        holder.betAmount.setText(user.getStringBalance());
+                        holder.betAmount.setSelection(holder.betAmount.length());
+                    }
+                } else {
+                    holder.betConfirm.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        holder.betLayout.setVisibility(View.GONE);
     }
 
     @Override
     public int getItemCount() {
         return games.size();
+    }
+
+    public void show(GameItemViewHolder holder) {
+        holder.betLayout.setVisibility(View.VISIBLE);
     }
 
     public class GameItemViewHolder extends RecyclerView.ViewHolder {
@@ -300,6 +380,10 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
         private Button drawVoteBtn;
         private TextView dayView;
         private TextView timeView;
+        private LinearLayout betLayout;
+        private EditText betAmount;
+        private Button betConfirm;
+        private ImageView betCancel;
 
         GameItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -312,6 +396,10 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
             drawVoteBtn = itemView.findViewById(R.id.draw_vote_button);
             dayView = itemView.findViewById(R.id.day);
             timeView = itemView.findViewById(R.id.time);
+            betLayout = itemView.findViewById(R.id.bet_frame);
+            betAmount = itemView.findViewById(R.id.bet_amount);
+            betConfirm = itemView.findViewById(R.id.bet_confirm);
+            betCancel = itemView.findViewById(R.id.bet_cancel);
         }
     }
 }

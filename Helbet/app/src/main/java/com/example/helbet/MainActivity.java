@@ -110,7 +110,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setAdapter(User user) {
-        adapter = new GameItemAdapter(gamesForAdapter, TimeZone.getDefault());
+        adapter = new GameItemAdapter(gamesForAdapter, TimeZone.getDefault(), session.getCurrentUser());
         recyclerView.setAdapter(adapter);
     }
 }

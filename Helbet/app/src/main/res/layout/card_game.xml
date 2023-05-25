@@ -1,25 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
+    android:padding="10dp"
     android:background="@color/purple_700">
-
-        <Button
-            android:id="@+id/home_vote_button"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:background="@color/purple_500"
-            android:text="CODE"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/home_logo"
-            app:layout_constraintStart_toStartOf="@+id/home_logo"
-            app:layout_constraintTop_toBottomOf="@+id/home_logo" />
 
         <ImageView
             android:id="@+id/home_logo"
@@ -68,24 +56,11 @@
             android:textColor="@color/white"
             android:textSize="30sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/home_logo"
             app:layout_constraintEnd_toStartOf="@+id/away_logo"
             app:layout_constraintStart_toEndOf="@+id/home_logo"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.5" />
-
-        <Button
-            android:id="@+id/draw_vote_button"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:background="@color/purple_500"
-            android:text="CODE"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/away_vote_button"
-            app:layout_constraintStart_toEndOf="@+id/home_vote_button" />
 
         <ImageView
             android:id="@+id/away_logo"
@@ -115,6 +90,31 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
+            android:id="@+id/home_vote_button"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:background="@color/purple_500"
+            android:text="CODE"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="@+id/home_logo"
+            app:layout_constraintStart_toStartOf="@+id/home_logo"
+            app:layout_constraintTop_toBottomOf="@+id/home_logo" />
+
+        <Button
+            android:id="@+id/draw_vote_button"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:background="@color/purple_500"
+            android:text="CODE"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:layout_constraintTop_toTopOf="@id/home_vote_button"
+            app:layout_constraintEnd_toStartOf="@+id/away_vote_button"
+            app:layout_constraintStart_toEndOf="@+id/home_vote_button" />
+
+        <Button
             android:id="@+id/away_vote_button"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
@@ -123,9 +123,43 @@
             android:text="CODE"
             android:textColor="@color/white"
             android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/away_logo"
             app:layout_constraintStart_toStartOf="@+id/away_logo"
             app:layout_constraintTop_toBottomOf="@+id/away_logo" />
 
+        <LinearLayout
+            android:id="@+id/bet_frame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/home_vote_button"
+            android:paddingTop="10dp"
+            app:layout_constraintBottom_toBottomOf="parent" >
+
+                <EditText
+                    android:id="@+id/bet_amount"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:textColor="@color/white"
+                    android:layout_marginHorizontal="4dp"
+                    android:gravity="center"
+                    android:background="@color/purple_200"
+                    android:inputType="number" />
+
+                <Button
+                    android:id="@+id/bet_confirm"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:background="@color/purple_500"
+                    android:layout_marginHorizontal="4dp"
+                    android:text="Miser" />
+
+                <ImageView
+                    android:id="@+id/bet_cancel"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/baseline_close_24" />
+        </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
