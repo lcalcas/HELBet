@@ -1,15 +1,6 @@
 package com.example.helbet;
 
-import android.app.AlarmManager;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -87,15 +78,15 @@ public class MainActivity extends BaseActivity {
                     for (Game g: gameList) {
                         String homeId = g.getHomeClubId();
                         String awayId = g.getAwayClubId();
-                        db.fetch(PathRefs.CLUBS_PATHREF, homeId, Club.class, new OnFetchCompleteListener<Club>() {
+                        db.fetch(Constants.DBPathRefs.CLUBS, homeId, Club.class, new OnFetchCompleteListener<Club>() {
                             @Override
                             public void onFetchComplete(ArrayList<Club> fetchResult) {
                                 Club home = fetchResult.get(0);
-                                db.fetch(PathRefs.CLUBS_PATHREF, awayId, Club.class, new OnFetchCompleteListener<Club>() {
+                                db.fetch(Constants.DBPathRefs.CLUBS, awayId, Club.class, new OnFetchCompleteListener<Club>() {
                                     @Override
                                     public void onFetchComplete(ArrayList<Club> fetchResult) {
                                         Club away = fetchResult.get(0);
-                                        db.fetch(PathRefs.ODDS_PATHREF, g.getId(), Odd.class, new OnFetchCompleteListener<Odd>() {
+                                        db.fetch(Constants.DBPathRefs.ODDS, g.getId(), Odd.class, new OnFetchCompleteListener<Odd>() {
                                             @Override
                                             public void onFetchComplete(ArrayList<Odd> fetchResult) {
                                                 Odd odds = fetchResult.get(0);

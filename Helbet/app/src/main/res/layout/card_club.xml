@@ -49,7 +49,7 @@
         android:id="@+id/club_favorite"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_marginRight="20dp"
+        android:layout_marginEnd="20dp"
         android:button="@drawable/helbet_checkbox"
 
         android:checked="false"

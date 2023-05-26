@@ -24,6 +24,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.bumptech.glide.Glide;
 
@@ -44,6 +46,8 @@ public class Game extends DBModel implements Comparable<Game> {
     public String awayClubId;
     public int result;
 
+    public String approximateAddress;
+
     public Game() {
     }
 
@@ -53,24 +57,26 @@ public class Game extends DBModel implements Comparable<Game> {
                 other.getTimestamp(),
                 other.getHomeClubId(),
                 other.getAwayClubId(),
-                other.getResult()
+                other.getResult(),
+                other.getApproximateAddress()
         );
     }
 
-    public Game(String leagueId, long timestamp, String homeClubId, String awayClubId) {
-        this(leagueId, timestamp, homeClubId, awayClubId, Results.NONE);
+    public Game(String leagueId, long timestamp, String homeClubId, String awayClubId, String approximateAddress) {
+        this(leagueId, timestamp, homeClubId, awayClubId, Results.NONE, approximateAddress);
     }
 
-    public Game(String leagueId, long timestamp, String homeClubId, String awayClubId, int homeResult, int awayResult) {
-        this(leagueId, timestamp, homeClubId, awayClubId, calculateResult(homeResult, awayResult));
+    public Game(String leagueId, long timestamp, String homeClubId, String awayClubId, int homeResult, int awayResult, String approximateAddress) {
+        this(leagueId, timestamp, homeClubId, awayClubId, calculateResult(homeResult, awayResult), approximateAddress);
     }
 
-    public Game(String leagueId, long timestamp, String homeClubId, String awayClubId, int result) {
+    public Game(String leagueId, long timestamp, String homeClubId, String awayClubId, int result, String approximateAddress) {
         this.leagueId = leagueId;
         this.timestamp = timestamp;
         this.homeClubId = homeClubId;
         this.awayClubId = awayClubId;
         this.result = result;
+        this.approximateAddress = approximateAddress;
     }
 
     public String getLeagueId() {
@@ -112,6 +118,14 @@ public class Game extends DBModel implements Comparable<Game> {
 
     public void setResult(int result) {
         this.result = result;
+    }
+
+    public String getApproximateAddress() {
+        return approximateAddress;
+    }
+
+    public void setApproximateAddress(String approximateAddress) {
+        this.approximateAddress = approximateAddress;
     }
 
     public static int calculateResult(int homeResult, int awayResult) {
@@ -317,32 +331,11 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
                 user.debit(betAmount);
                 user.addBet(newBet);
 
-                Intent intent = new Intent(context, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+                //TODO
+                WorkManager.getInstance(context).enqueue(
+                        new OneTimeWorkRequest.Builder(NotificationWorker.class).setInitialDelay(300, TimeUnit.SECONDS).build()
+                );
 
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "helbet")
-                        .setSmallIcon(R.drawable.baseline_h_mobiledata_24)
-                        .setContentTitle("Test")
-                        .setContentText("textContent")
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                        .setContentIntent(pendingIntent);
-
-                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-
-                if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                }
-                notificationManager.notify(123, builder.build());
-                AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-                am.set(AlarmManager.RTC, new Date().getTime() + 10000, pendingIntent);
                 DBManager.getInstance().storeObject(user, "users");
             }
         };

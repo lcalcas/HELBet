@@ -6,16 +6,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 public class DBManager {
     private static DBManager singleton;
@@ -130,7 +127,7 @@ public class DBManager {
     }
 
     public void fetchGames(Date date, OnFetchCompleteListener<Game> listener) {
-        this.fetch(PathRefs.GAMES_PATHREF, true, Game.class, new OnFetchCompleteListener<Game>() {
+        this.fetch(Constants.DBPathRefs.GAMES, true, Game.class, new OnFetchCompleteListener<Game>() {
 
             @Override
             public void onFetchComplete(ArrayList<Game> fetchResult) {
@@ -163,19 +160,6 @@ public class DBManager {
 //            }
 //        });
 //    }
-
-    public void storeUserBet(String userId, Bet bet) {
-
-    }
-}
-
-class PathRefs {
-    public static final String USERS_PATHREF = "users";
-    public static final String LEAGUES_PATHREF = "leagues";
-    public static final String CLUBS_PATHREF = "clubs";
-    public static final String GAMES_PATHREF = "games";
-    public static final String ODDS_PATHREF = "odds";
-    public static final String UPDATETIMER_KEY = "updateTimer";
 }
 
 interface OnFetchCompleteListener <T extends DBModel> {

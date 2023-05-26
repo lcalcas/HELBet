@@ -1,19 +1,14 @@
 package com.example.helbet;
 
-import static com.example.helbet.PathRefs.USERS_PATHREF;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.util.ArrayList;
 
 public class RegisterActivity extends BaseActivity {
 
@@ -94,7 +89,7 @@ public class RegisterActivity extends BaseActivity {
                     if (authTask.isSuccessful()) {
                         User user = new User(email);
                         user.setId(authTask.getResult().getUser().getUid());
-                        db.storeObject(user, USERS_PATHREF, dbTask -> {
+                        db.storeObject(user, Constants.DBPathRefs.USERS, dbTask -> {
                             progressBar.setVisibility(View.GONE);
                             if (dbTask.isSuccessful()) {
                                 Toast.makeText(this, "Compte créé avec succès !", Toast.LENGTH_LONG);

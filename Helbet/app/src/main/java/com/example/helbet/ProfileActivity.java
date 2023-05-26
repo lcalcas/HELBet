@@ -1,6 +1,5 @@
 package com.example.helbet;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -60,7 +59,7 @@ public class ProfileActivity extends BaseActivity {
         if (session.getCurrentUser().getFavoriteClubs() != null) {
             for (String clubId :
                     session.getCurrentUser().getFavoriteClubs()) {
-                db.fetch(PathRefs.CLUBS_PATHREF, clubId, Club.class, new OnFetchCompleteListener() {
+                db.fetch(Constants.DBPathRefs.CLUBS, clubId, Club.class, new OnFetchCompleteListener() {
                     @Override
                     public void onFetchComplete(ArrayList fetchResult) {
                         Club club = (Club) fetchResult.get(0);

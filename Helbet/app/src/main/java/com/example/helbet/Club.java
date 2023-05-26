@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -126,7 +125,7 @@ class ClubItemAdapter extends RecyclerView.Adapter<ClubItemAdapter.ClubItemViewH
                         user.removeFavoriteClub(club.getId());
                     }
 
-                    DBManager.getInstance().storeObject(user, "users");
+                    DBManager.getInstance().storeObject(user, Constants.DBPathRefs.USERS);
                 }
             });
         } else {

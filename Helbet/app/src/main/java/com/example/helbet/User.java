@@ -60,14 +60,10 @@
 
 package com.example.helbet;
 
-import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @IgnoreExtraProperties
 public class User extends DBModel{
@@ -80,7 +76,7 @@ public class User extends DBModel{
     }
 
     public User(String email) {
-        this(email, new ArrayList<String>(), 500);
+        this(email, new ArrayList<String>(), Constants.InitialValues.USER_BALANCE);
     }
 
     public User(String email, ArrayList<String> favoriteClubs, int balance) {

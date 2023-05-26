@@ -1,17 +1,13 @@
 package com.example.helbet;
 
-import static com.example.helbet.PathRefs.USERS_PATHREF;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
-import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
@@ -19,21 +15,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public abstract class BaseActivity extends AppCompatActivity{
-    public final static Class<MainActivity> INDEX = MainActivity.class;
     Session session;
 
     APIManager api;
@@ -152,7 +143,7 @@ public abstract class BaseActivity extends AppCompatActivity{
             if (user != null && user.getId().equals(auth.getUser().getUid())) { // Realtime Database User ok ?
                 userLogged();
             } else {
-                db.fetch(USERS_PATHREF, auth.getUser().getUid(), User.class, new OnFetchCompleteListener<User>() {
+                db.fetch(Constants.DBPathRefs.USERS, auth.getUser().getUid(), User.class, new OnFetchCompleteListener<User>() {
                     @Override
                     public void onFetchComplete(ArrayList<User> fetchResult) {
                         if (fetchResult.size() == 1) {
@@ -171,7 +162,7 @@ public abstract class BaseActivity extends AppCompatActivity{
     }
 
     public void goToMain() {
-        Intent intent = new Intent(getApplicationContext(), INDEX);
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
         finish();
     }
@@ -203,7 +194,7 @@ public abstract class BaseActivity extends AppCompatActivity{
             CharSequence name = "Paris";
             String description = "Helbet Paris";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("helbet", name, importance);
+            NotificationChannel channel = new NotificationChannel(Constants.InitialValues.NOTIFICATION_CHANNEL_ID, name, importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this

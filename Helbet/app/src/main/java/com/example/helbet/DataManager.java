@@ -7,8 +7,6 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -21,7 +19,7 @@ public class DataManager  {
     private static DataManager singleton;
     private APIManager apiManager;
     private DBManager dbManager;
-    public final static ArrayList<String> LIST_LEAGUE_IDS = new ArrayList<>(Arrays.asList(APIConfig.LEAGUE_IDS));
+    public final static ArrayList<String> LIST_LEAGUE_IDS = new ArrayList<>(Arrays.asList(Constants.LEAGUE_IDS));
 
     private DataManager(Context context) {
         apiManager = APIManager.getInstance(context);
@@ -37,12 +35,12 @@ public class DataManager  {
     }
 
     public void dlAndStoreLeagues(OnDownloadCompleteListener listener) {
-        apiManager.dlLeagues(LIST_LEAGUE_IDS, new OnDownloadCompleteListener<League>() {
+        apiManager.dlLeagues(new OnDownloadCompleteListener<League>() {
             @Override
             public void onDownloadComplete(ArrayList<League> downloadResult) {
                 for (League l: downloadResult) {
                     if (LIST_LEAGUE_IDS.contains(l.getId())) {
-                        dbManager.storeObject(l, PathRefs.LEAGUES_PATHREF);
+                        dbManager.storeObject(l, Constants.DBPathRefs.LEAGUES);
                     }
                 }
 
@@ -52,7 +50,7 @@ public class DataManager  {
     }
 
     public void dlAndStoreLeagueClubs(String leagueId) {
-        dbManager.fetch(PathRefs.LEAGUES_PATHREF, leagueId, League.class,
+        dbManager.fetch(Constants.DBPathRefs.LEAGUES, leagueId, League.class,
                 new OnFetchCompleteListener<League>() {
                     @Override
                     public void onFetchComplete(ArrayList<League> fetchResult) {
@@ -62,7 +60,7 @@ public class DataManager  {
                             @Override
                             public void onDownloadComplete(ArrayList<Club> downloadResult) {
                                 for (Club c: downloadResult) {
-                                    dbManager.storeObject(c, PathRefs.CLUBS_PATHREF);
+                                    dbManager.storeObject(c, Constants.DBPathRefs.CLUBS);
                                 }
                             }
                         });
@@ -87,16 +85,16 @@ public class DataManager  {
             public void onDownloadComplete(ArrayList<Game> downloadResult) {
                 for (Game g: downloadResult) {
                     if (LIST_LEAGUE_IDS.contains(g.getLeagueId())) {
-                        dbManager.storeObject(g, PathRefs.GAMES_PATHREF);
+                        dbManager.storeObject(g, Constants.DBPathRefs.GAMES);
                         apiManager.dlOdd(g.getId(), new OnDownloadCompleteListener<Odd>() {
                             @Override
                             public void onDownloadComplete(ArrayList<Odd> downloadResult) {
                                 Odd gOdd;
                                 gOdd = downloadResult.get(0);
                                 gOdd.setId(g.getId());
-                                dbManager.storeObject(gOdd, PathRefs.ODDS_PATHREF,
+                                dbManager.storeObject(gOdd, Constants.DBPathRefs.ODDS,
                                         task -> {
-                                    dbManager.storeObject(g, PathRefs.GAMES_PATHREF);
+                                    dbManager.storeObject(g, Constants.DBPathRefs.GAMES);
                                 });
                             }
                         });
@@ -157,7 +155,7 @@ public class DataManager  {
 
     public void updateIfNecessary(OnDownloadCompleteListener listener) {
         // TODO CHECK PATHREF
-        dbManager.fetch(PathRefs.UPDATETIMER_KEY, false, UpdateTimer.class, new OnFetchCompleteListener<UpdateTimer>() {
+        dbManager.fetch(Constants.DBPathRefs.UPDATETIMER, false, UpdateTimer.class, new OnFetchCompleteListener<UpdateTimer>() {
             @Override
             public void onFetchComplete(ArrayList<UpdateTimer> fetchResult) {
                 UpdateTimer lastUpdate = fetchResult.get(0);
@@ -208,7 +206,7 @@ public class DataManager  {
 
     public void updateTimer(OnDownloadCompleteListener listener) {
         UpdateTimer latestUpdate = new UpdateTimer(new Date());
-        latestUpdate.setId(PathRefs.UPDATETIMER_KEY);
+        latestUpdate.setId(Constants.DBPathRefs.UPDATETIMER);
         dbManager.storeObject(latestUpdate, new OnCompleteListener() {
             @Override
             public void onComplete(@NonNull Task task)  {
@@ -232,7 +230,7 @@ public class DataManager  {
         calendar.set(Calendar.SECOND, 59);
         calendar.set(Calendar.MILLISECOND, 999);
         long timeMax = calendar.getTimeInMillis();
-        dbManager.fetch(PathRefs.GAMES_PATHREF, "timestamp", timeMin, timeMax, Game.class, new OnFetchCompleteListener<Game>() {
+        dbManager.fetch(Constants.DBPathRefs.GAMES, "timestamp", timeMin, timeMax, Game.class, new OnFetchCompleteListener<Game>() {
             @Override
             public void onFetchComplete(ArrayList<Game> fetchResult) {
                 if (!fetchResult.isEmpty()) {

@@ -21,11 +21,11 @@ public class ListingActivity extends BaseActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         leaguesForAdapter = new ArrayList<>();
-        db.fetch(PathRefs.LEAGUES_PATHREF, true, League.class, new OnFetchCompleteListener<League>() {
+        db.fetch(Constants.DBPathRefs.LEAGUES, true, League.class, new OnFetchCompleteListener<League>() {
             public void onFetchComplete(ArrayList<League> result) {
                 for (League l: result) {
 
-                    db.fetch(PathRefs.CLUBS_PATHREF, "leagueId", l.getId(), Club.class, new OnFetchCompleteListener<Club>() {
+                    db.fetch(Constants.DBPathRefs.CLUBS, "leagueId", l.getId(), Club.class, new OnFetchCompleteListener<Club>() {
                         @Override
                         public void onFetchComplete(ArrayList<Club> fetchResult) {
                             ArrayList<ClubItemDataModel> clubsForAdapter = new ArrayList<>();
@@ -37,9 +37,9 @@ public class ListingActivity extends BaseActivity {
                             LeagueCollectionDataModel leagueDataModel = new LeagueCollectionDataModel(l, clubsForAdapter);
                             leagueDataModel.setId(l.getId());
                             leaguesForAdapter.add(leagueDataModel);
-                            if (checkLeaguesFetch()) {
+//                            if (checkLeaguesFetch()) {
                                 setAdapter();
-                            }
+//                            }
                         }
                     });
                 }
@@ -67,9 +67,9 @@ public class ListingActivity extends BaseActivity {
         super.userLogged();
     }
 
-    private boolean checkLeaguesFetch() {
-        return APIConfig.LEAGUE_IDS.length == leaguesForAdapter.size();
-    }
+//    private boolean checkLeaguesFetch() {
+//        return APIConfig.LEAGUE_IDS.length == leaguesForAdapter.size();
+//    }
 
     private void setAdapter() {
         User user = session.getCurrentUser();

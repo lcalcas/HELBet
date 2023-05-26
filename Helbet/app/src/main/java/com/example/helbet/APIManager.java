@@ -4,6 +4,7 @@ import static java.text.DateFormat.getDateInstance;
 
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -11,8 +12,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.JsonObject;
-import com.google.gson.internal.bind.util.ISO8601Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -75,7 +74,7 @@ public class APIManager {
 //        }
     }
 
-    public void dlLeagues(ArrayList<String> leagueIds, OnDownloadCompleteListener<League> listener) {
+    public void dlLeagues(OnDownloadCompleteListener<League> listener) {
         String requestUrl = API_URL.concat("leagues?current=true");
         ArrayList<League> result = new ArrayList<>();
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, requestUrl, null,
@@ -165,6 +164,7 @@ public class APIManager {
                             for (int i = 0; i < responseData.length(); i++) {
                                 JSONObject gameData = new JSONObject(responseData.get(i).toString());
                                 JSONObject fixtureData = gameData.getJSONObject("fixture");
+                                    JSONObject venueData = fixtureData.getJSONObject("venue");
                                 JSONObject leagueData = gameData.getJSONObject("league");
                                 JSONObject teamsData = gameData.getJSONObject("teams");
                                 JSONObject goalsData = gameData.getJSONObject("goals");
@@ -174,15 +174,21 @@ public class APIManager {
                                 String homeClubId = teamsData.getJSONObject("home").getString("id");
                                 String awayClubId = teamsData.getJSONObject("away").getString("id");
 
+                                String venueName = venueData.getString("name");
+                                String venueCity = venueData.getString("city");
+                                String approximateAddress = venueName.concat(", " + venueCity);
+
+                                Log.d("VENUE", approximateAddress);
+
                                 timeStamp *= 1000;
 
                                 Game game;
                                 if (goalsData.isNull("home") | goalsData.isNull("away")) {
-                                    game = new Game(leagueId, timeStamp, homeClubId, awayClubId);
+                                    game = new Game(leagueId, timeStamp, homeClubId, awayClubId, approximateAddress);
                                 } else {
                                     int homeResult = goalsData.optInt("home", 0);
                                     int awayResult = goalsData.optInt("away", 0);
-                                    game = new Game(leagueId, timeStamp, homeClubId, awayClubId, homeResult, awayResult);
+                                    game = new Game(leagueId, timeStamp, homeClubId, awayClubId, homeResult, awayResult, approximateAddress);
                                 }
                                 game.setId(fixtureData.getString("id"));
                                 games.add(game);
@@ -261,7 +267,8 @@ public class APIManager {
                                 resultOdd.setId(gameId);
                                 result.add(resultOdd);
                             } else {
-                                Odd resultOdd = new Odd(1.5, 1.5, 1.5);
+                                double initialOddValue = Constants.InitialValues.ODD_VALUE;
+                                Odd resultOdd = new Odd(initialOddValue, initialOddValue, initialOddValue);
                                 resultOdd.setId(gameId);
                                 result.add(resultOdd);
                             }

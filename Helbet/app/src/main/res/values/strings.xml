@@ -9,4 +9,11 @@
     <string name="missing_ressource">RESSOURCE MANQUANTE</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="authentication">S\'authentifier</string>
+    <string name="day_example">Mercredi</string>
+    <string name="time_example">21:00</string>
+    <string name="away_club">FC Exterieur</string>
+    <string name="odd">1.0</string>
+    <string name="home_club">FC Domicile</string>
+    <string name="bet">Miser</string>
 </resources>

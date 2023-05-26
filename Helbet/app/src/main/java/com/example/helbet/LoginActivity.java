@@ -1,14 +1,11 @@
 package com.example.helbet;
 
-import static com.example.helbet.PathRefs.USERS_PATHREF;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -95,7 +92,7 @@ public class LoginActivity extends BaseActivity {
                     progressBar.setVisibility(View.VISIBLE);
                     if (authTask.isSuccessful()) {
                         String userId = authTask.getResult().getUser().getUid();
-                        db.fetch(USERS_PATHREF, userId, User.class, new OnFetchCompleteListener<User>() {
+                        db.fetch(Constants.DBPathRefs.USERS, userId, User.class, new OnFetchCompleteListener<User>() {
                             @Override
                             public void onFetchComplete(ArrayList<User> fetchResult) {
                                 progressBar.setVisibility(View.GONE);
