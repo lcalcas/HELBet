@@ -9,157 +9,196 @@
     android:padding="10dp"
     android:background="@color/purple_700">
 
-        <ImageView
-            android:id="@+id/home_logo"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_margin="4dp"
-            android:padding="5dp"
-            android:background="@color/white"
-            app:layout_constraintBottom_toTopOf="@id/home_vote_button"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/home_club_name" />
-        <!--            app:layout_constraintStart_toEndOf="@+id/home_vote_button"-->
-
-        <TextView
-            android:id="@+id/home_club_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:text="@string/home_club"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/home_logo"
-            app:layout_constraintStart_toStartOf="@id/home_logo"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/day"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/day_example"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/time"
-            app:layout_constraintEnd_toStartOf="@+id/away_logo"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/home_logo" />
-
-        <TextView
-            android:id="@+id/time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:text="@string/time_example"
-            android:textColor="@color/white"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/home_logo"
-            app:layout_constraintEnd_toStartOf="@+id/away_logo"
-            app:layout_constraintStart_toEndOf="@+id/home_logo"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.5" />
-
-        <ImageView
-            android:id="@+id/away_logo"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_margin="4dp"
-            android:padding="5dp"
-            android:background="@color/white"
-            app:layout_constraintBottom_toTopOf="@id/away_vote_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/away_club_name"
-            app:layout_constraintVertical_bias="0.5" />
-        <!--        app:layout_constraintEnd_toStartOf="@id/away_vote_button"-->
-
-
-        <TextView
-            android:id="@+id/away_club_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:text="@string/away_club"
-            android:textColor="@color/white"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/away_logo"
-            app:layout_constraintEnd_toEndOf="@id/away_logo"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/home_vote_button"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:background="@color/purple_500"
-            android:text="@string/odd"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="@+id/home_logo"
-            app:layout_constraintStart_toStartOf="@+id/home_logo"
-            app:layout_constraintTop_toBottomOf="@+id/home_logo" />
-
-        <Button
-            android:id="@+id/draw_vote_button"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:background="@color/purple_500"
-            android:text="@string/odd"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            app:layout_constraintTop_toTopOf="@id/home_vote_button"
-            app:layout_constraintEnd_toStartOf="@+id/away_vote_button"
-            app:layout_constraintStart_toEndOf="@+id/home_vote_button" />
-
-        <Button
-            android:id="@+id/away_vote_button"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:background="@color/purple_500"
-            android:text="@string/odd"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="@+id/away_logo"
-            app:layout_constraintStart_toStartOf="@+id/away_logo"
-            app:layout_constraintTop_toBottomOf="@+id/away_logo" />
-
-        <LinearLayout
-            android:id="@+id/bet_frame"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/gameData_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/home_vote_button"
-            android:paddingTop="10dp"
-            app:layout_constraintBottom_toBottomOf="parent" >
+            app:layout_constraintTop_toTopOf="parent">
+                <ImageView
+                    android:id="@+id/home_logo"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_margin="4dp"
+                    android:padding="5dp"
+                    android:background="@color/white"
+                    app:layout_constraintBottom_toTopOf="@id/home_vote_button"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/home_club_name" />
+                <!--            app:layout_constraintStart_toEndOf="@+id/home_vote_button"-->
 
-                <EditText
-                    android:id="@+id/bet_amount"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="3"
+                <TextView
+                    android:id="@+id/home_club_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:text="@string/home_club"
                     android:textColor="@color/white"
-                    android:layout_marginHorizontal="4dp"
-                    android:gravity="center"
-                    android:background="@color/purple_200"
-                    android:inputType="number" />
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/home_logo"
+                    app:layout_constraintStart_toStartOf="@id/home_logo"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <Button
-                    android:id="@+id/bet_confirm"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="2"
-                    android:background="@color/purple_500"
-                    android:layout_marginHorizontal="4dp"
-                    android:text="@string/bet" />
+                <TextView
+                    android:id="@+id/day"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/day_example"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@+id/time"
+                    app:layout_constraintEnd_toStartOf="@+id/away_logo"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/home_logo" />
+
+                <TextView
+                    android:id="@+id/time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:text="@string/time_example"
+                    android:textColor="@color/white"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/home_logo"
+                    app:layout_constraintEnd_toStartOf="@+id/away_logo"
+                    app:layout_constraintStart_toEndOf="@+id/home_logo"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.5" />
 
                 <ImageView
-                    android:id="@+id/bet_cancel"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:src="@drawable/baseline_close_24" />
-        </LinearLayout>
+                    android:id="@+id/open_map"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/baseline_map_24"
+                    app:layout_constraintTop_toBottomOf="@id/time"
+                    app:layout_constraintBottom_toTopOf="@id/draw_vote_button"
+                    app:layout_constraintStart_toEndOf="@id/home_logo"
+                    app:layout_constraintEnd_toStartOf="@id/away_logo"/>
+
+                <ImageView
+                    android:id="@+id/away_logo"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_margin="4dp"
+                    android:padding="5dp"
+                    android:background="@color/white"
+                    app:layout_constraintBottom_toTopOf="@id/away_vote_button"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/away_club_name"
+                    app:layout_constraintVertical_bias="0.5" />
+                <!--        app:layout_constraintEnd_toStartOf="@id/away_vote_button"-->
+
+
+                <TextView
+                    android:id="@+id/away_club_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:text="@string/away_club"
+                    android:textColor="@color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="@id/away_logo"
+                    app:layout_constraintEnd_toEndOf="@id/away_logo"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/home_vote_button"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:background="@color/purple_500"
+                    android:text="@string/odd"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="@+id/home_logo"
+                    app:layout_constraintStart_toStartOf="@+id/home_logo"
+                    app:layout_constraintTop_toBottomOf="@+id/home_logo" />
+
+                <Button
+                    android:id="@+id/draw_vote_button"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:background="@color/purple_500"
+                    android:text="@string/odd"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    app:layout_constraintTop_toTopOf="@id/home_vote_button"
+                    app:layout_constraintEnd_toStartOf="@+id/away_vote_button"
+                    app:layout_constraintStart_toEndOf="@+id/home_vote_button" />
+
+                <Button
+                    android:id="@+id/away_vote_button"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:background="@color/purple_500"
+                    android:text="@string/odd"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="@+id/away_logo"
+                    app:layout_constraintStart_toStartOf="@+id/away_logo"
+                    app:layout_constraintTop_toBottomOf="@+id/away_logo" />
+
+                <LinearLayout
+                    android:id="@+id/bet_frame"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/home_vote_button"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    app:layout_constraintBottom_toBottomOf="parent" >
+
+                        <EditText
+                            android:id="@+id/bet_amount"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="3"
+                            android:textColor="@color/white"
+                            android:layout_marginHorizontal="4dp"
+                            android:gravity="center"
+                            android:background="@color/purple_200"
+                            android:inputType="number" />
+
+                        <Button
+                            android:id="@+id/bet_confirm"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="2"
+                            android:background="@color/purple_500"
+                            android:layout_marginHorizontal="4dp"
+                            android:text="@string/bet" />
+
+                        <ImageView
+                            android:id="@+id/bet_cancel"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:src="@drawable/baseline_close_24" />
+                </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/venue_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@color/purple_500" >
+
+                <org.osmdroid.views.MapView
+                    android:id="@+id/venue_map"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <ImageView
+                    android:id="@+id/close_map"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/baseline_close_24"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -147,9 +147,11 @@ public class User extends DBModel{
         bets.add(bet);
     }
 
-    public void debit(int amount) {
+    public void retireMoney(int amount) {
         this.balance -= amount;
     }
+
+    public void addMoney(int amount) {this.balance += amount;}
 
     @Override
     public String toString() {

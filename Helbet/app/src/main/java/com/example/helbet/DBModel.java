@@ -22,7 +22,7 @@ public abstract class DBModel implements DBExclude, Serializable {
     public String toString() {
         return "DBModel{" +
                 "id='" + id + '\'' +
-                '}';
+                '}' + super.toString();
     }
 }
 

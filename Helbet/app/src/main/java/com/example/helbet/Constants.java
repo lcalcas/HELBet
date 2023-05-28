@@ -9,6 +9,7 @@ public class Constants {
         public static final double ODD_VALUE = 1.5;
         public static final int NOTIFICATION_ID = 123;
         public static final String NOTIFICATION_CHANNEL_ID = "helbet_channel";
+        public static final int MAP_ZOOM_KM = 100;
     }
 
     class DBPathRefs {

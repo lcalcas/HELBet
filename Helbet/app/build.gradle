@@ -53,6 +53,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
     // Kotlin
 
+    implementation 'org.osmdroid:osmdroid-android:6.1.10'
 
     // Feature module Support
 //    implementation "androidx.navigation:navigation-dynamic-features-fragment:2.5.3"

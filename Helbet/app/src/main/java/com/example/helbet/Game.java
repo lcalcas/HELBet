@@ -1,13 +1,6 @@
 package com.example.helbet;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -20,14 +13,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import com.bumptech.glide.Glide;
+
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -38,6 +35,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Game extends DBModel implements Comparable<Game> {
     public String leagueId;
@@ -173,12 +171,16 @@ class GameItemDataModel extends Game {
     private Club home;
     private Club away;
     private Odd odds;
+    private double latitude;
+    private double longitude;
 
-    public GameItemDataModel(Game g, Club home, Club away, Odd odds) {
+    public GameItemDataModel(Game g, Club home, Club away, Odd odds, double latitude, double longitude) {
         super(g);
         this.home = home;
         this.away = away;
         this.odds = odds;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public Club getHome() {
@@ -205,6 +207,22 @@ class GameItemDataModel extends Game {
         this.odds = odds;
     }
 
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
     public String getFormattedTime(TimeZone timezone) {
         DateFormat formatter = new SimpleDateFormat("HH:mm");
         formatter.setTimeZone(timezone);
@@ -218,6 +236,8 @@ class GameItemDataModel extends Game {
                 "home=" + home +
                 ", away=" + away +
                 ", odds=" + odds +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
                 "} " + super.toString();
     }
 }
@@ -252,19 +272,19 @@ class GameItemDataModel extends Game {
 //        return result;
 //    }
 //}
-
-
 class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewHolder> {
     Context context;
     ArrayList<GameItemDataModel> games;
     TimeZone timezone;
     User user;
+    MutableLiveData<User> userLiveData;
 
-    public GameItemAdapter(Context context, ArrayList<GameItemDataModel> games, TimeZone timezone, User user) {
+    public GameItemAdapter(Context context, ArrayList<GameItemDataModel> games, TimeZone timezone, User user, MutableLiveData<User> userLiveData) {
         this.context = context;
         this.games = games;
         this.timezone = timezone;
         this.user = user;
+        this.userLiveData = userLiveData;
     }
 
     @NonNull
@@ -279,6 +299,7 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
         GameItemDataModel g = games.get(position);
 
         AtomicInteger betResult = new AtomicInteger(Results.NONE);
+        AtomicReference<Double> oddValue = new AtomicReference<>(1.5);
 
         holder.betConfirm.setEnabled(false);
 
@@ -325,11 +346,18 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
         View.OnClickListener betConfirmListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                holder.betLayout.setVisibility(View.GONE);
+
                 int betAmount = Integer.parseInt(holder.betAmount.getText().toString());
-                Bet newBet = new Bet(betResult.get(), betAmount);
+                Bet newBet = new Bet(betResult.get(), betAmount, oddValue.get());
                 newBet.setId(g.getId());
-                user.debit(betAmount);
+
+                System.out.println(user);
+
+                user.retireMoney(betAmount);
                 user.addBet(newBet);
+
+                userLiveData.setValue(user);
 
                 //TODO
                 WorkManager.getInstance(context).enqueue(
@@ -345,16 +373,19 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
         holder.homeVoteBtn.setOnClickListener(v -> {
             show(holder);
             betResult.set(Results.HOME);
+            oddValue.set(odds.getHomeOdd());
         });
 
         holder.drawVoteBtn.setOnClickListener(v -> {
             show(holder);
             betResult.set(Results.DRAW);
+            oddValue.set(odds.getDrawOdd());
         });
 
         holder.awayVoteBtn.setOnClickListener(v -> {
             show(holder);
             betResult.set(Results.AWAY);
+            oddValue.set(odds.getAwayOdd());
         });
 
         holder.betCancel.setOnClickListener(v -> {
@@ -391,6 +422,27 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
         });
 
         holder.betLayout.setVisibility(View.GONE);
+
+        holder.venueContainer.setVisibility(View.GONE);
+
+        holder.openMap.setOnClickListener(v -> {
+            holder.gameContainer.setVisibility(View.GONE);
+            holder.venueContainer.setVisibility(View.VISIBLE);
+
+            holder.mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
+            GeoPoint location = new GeoPoint(g.getLatitude(), g.getLongitude());
+            Marker marker = new Marker(holder.mapView);
+            marker.setPosition(location);
+            holder.mapView.getOverlays().add(marker);
+            holder.mapView.getController().setCenter(location);
+            holder.mapView.setMultiTouchControls(false);
+            holder.mapView.getController().setZoom(12.0);
+        });
+
+        holder.closeMap.setOnClickListener(v -> {
+            holder.venueContainer.setVisibility(View.GONE);
+            holder.gameContainer.setVisibility(View.VISIBLE);
+        });
     }
 
     @Override
@@ -402,11 +454,9 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
         holder.betLayout.setVisibility(View.VISIBLE);
     }
 
-
     public void setAlarm(long gameTimestamp) {
 
     }
-
 
     public class GameItemViewHolder extends RecyclerView.ViewHolder {
 
@@ -423,6 +473,11 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
         private EditText betAmount;
         private Button betConfirm;
         private ImageView betCancel;
+        private MapView mapView;
+        private ImageView closeMap;
+        private ImageView openMap;
+        private ConstraintLayout venueContainer;
+        private ConstraintLayout gameContainer;
 
         GameItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -439,11 +494,14 @@ class GameItemAdapter extends RecyclerView.Adapter<GameItemAdapter.GameItemViewH
             betAmount = itemView.findViewById(R.id.bet_amount);
             betConfirm = itemView.findViewById(R.id.bet_confirm);
             betCancel = itemView.findViewById(R.id.bet_cancel);
+            mapView = itemView.findViewById(R.id.venue_map);
+            openMap = itemView.findViewById(R.id.open_map);
+            closeMap = itemView.findViewById(R.id.close_map);
+            venueContainer = itemView.findViewById(R.id.venue_container);
+            gameContainer = itemView.findViewById(R.id.gameData_container);
         }
     }
 }
-
-
 class Results {
     public static int NONE = 000;
     public static int DRAW = 100;

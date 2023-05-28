@@ -126,6 +126,21 @@ public class DBManager {
         fetchQuery(q, _class, multiple, listener);
     }
 
+//    public void fetchBet(String userId, String gameId, OnFetchCompleteListener<Bet> listener) {
+//        Query q = dbRealtime.getReference(Constants.DBPathRefs.USERS).child(userId).child("bets").orderByChild("id").equalTo(gameId);
+//        q.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                System.out.println(snapshot);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+//    }
+
     public void fetchGames(Date date, OnFetchCompleteListener<Game> listener) {
         this.fetch(Constants.DBPathRefs.GAMES, true, Game.class, new OnFetchCompleteListener<Game>() {
 

@@ -22,6 +22,8 @@ import android.widget.TextView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
+import org.osmdroid.config.Configuration;
+
 import java.util.ArrayList;
 
 public abstract class BaseActivity extends AppCompatActivity{
@@ -38,10 +40,11 @@ public abstract class BaseActivity extends AppCompatActivity{
     ImageView balanceIcon;
     BottomNavigationView bottomNav;
 
+    FrameLayout popUp;
+
     MutableLiveData<User> userLiveData;
 
     NotificationManagerCompat notificationManager;
-
 
     @Override
     public void setContentView(int layoutResID) {
@@ -70,12 +73,14 @@ public abstract class BaseActivity extends AppCompatActivity{
         balance = findViewById(R.id.fb_balance_amount);
         balanceIcon = findViewById(R.id.fb_balance_image);
         bottomNav = findViewById(R.id.bottom_nav);
+        popUp = findViewById(R.id.popup);
 
         userLiveData = new MutableLiveData<>();
 
         notificationManager = NotificationManagerCompat.from(this);
 
         createNotificationChannel();
+        Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
     }
 
     public abstract int getContentLayoutId();
@@ -100,6 +105,8 @@ public abstract class BaseActivity extends AppCompatActivity{
     @Override
     protected void onStart() {
         super.onStart();
+
+        popUp.setVisibility(View.GONE);
 
         bottomNav.setSelectedItemId(getBottomNavSelectItemId());
         bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
@@ -169,6 +176,7 @@ public abstract class BaseActivity extends AppCompatActivity{
 
     protected void userLogged() {
         userLiveData.setValue(session.getCurrentUser());
+        System.out.println(session.getCurrentUser());
     }
     protected void userUnLogged() {
         setBalanceDisplay(View.INVISIBLE);
